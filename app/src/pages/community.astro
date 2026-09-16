@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import PageHero from '../components/PageHero.astro';
+import { navItems } from '../data/navigation';
+
+const title = 'Community | Frank Osasere Idugboe';
+---
+
+<BaseLayout
+  title={title}
+  description="Cloud community participation, technical mentoring, and knowledge-sharing activities of Frank Osasere Idugboe."
+>
+  <SiteHeader navItems={navItems} />
+
+  <main>
+    <PageHero
+      eyebrow="Community"
+      title="Engineering knowledge is more valuable when it is shared."
+      description="Community work spanning AWS, technical writing, mentoring, practitioner education, and helping engineers understand cloud infrastructure through practical experience."
+    />
+
+    <section class="bg-slate-50 py-16">
+      <div class="mx-auto max-w-4xl px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-slate-950">AWS Community Builder</h2>
+
+        <p class="mt-5 leading-8 text-slate-600">
+          Community participation includes AWS-focused knowledge sharing,
+          technical content, mentoring, and practitioner discussions around
+          cloud operations and security.
+        </p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import PageHero from '../components/PageHero.astro';
+import { navItems } from '../data/navigation';
+
+const title = 'Experience | Frank Osasere Idugboe';
+---
+
+<BaseLayout
+  title={title}
+  description="Professional DevOps, cloud engineering, infrastructure, and cloud security experience of Frank Osasere Idugboe."
+>
+  <SiteHeader navItems={navItems} />
+
+  <main>
+    <PageHero
+      eyebrow="Experience"
+      title="Cloud infrastructure and production engineering experience."
+      description="A career spanning infrastructure operations, AWS, Kubernetes, Infrastructure as Code, CI/CD, observability, cloud security, and engineering leadership."
+    />
+
+    <section class="bg-slate-50 py-16">
+      <div class="mx-auto max-w-4xl px-6 lg:px-8">
+        <p class="text-lg leading-8 text-slate-600">
+          Detailed role history, engineering responsibilities, production
+          outcomes, and selected achievements will be presented here as
+          structured experience entries.
+        </p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

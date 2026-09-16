@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import PageHero from '../components/PageHero.astro';
+import { navItems } from '../data/navigation';
+
+const title = 'About | Frank Osasere Idugboe';
+---
+
+<BaseLayout
+  title={title}
+  description="About Frank Osasere Idugboe, Cloud & DevOps Engineer, AWS Community Builder, and Digital Forensics Researcher."
+>
+  <SiteHeader navItems={navItems} />
+
+  <main>
+    <PageHero
+      eyebrow="About"
+      title="Engineering cloud systems with security, reliability, and evidence in mind."
+      description="I work across cloud infrastructure, DevOps automation, Kubernetes, security engineering, and digital forensics, combining production operations with an active research perspective."
+    />
+
+    <section class="bg-white py-16">
+      <div class="mx-auto max-w-4xl px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-slate-950">Professional focus</h2>
+
+        <p class="mt-5 leading-8 text-slate-600">
+          My engineering work focuses on AWS infrastructure, Kubernetes,
+          Infrastructure as Code, CI/CD, observability, cloud security, and
+          production incident troubleshooting.
+        </p>
+
+        <p class="mt-5 leading-8 text-slate-600">
+          Alongside engineering, I am pursuing graduate research in forensic
+          science with interests in cloud forensics, forensic-ready systems,
+          IoT evidence, and digital investigation workflows.
+        </p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

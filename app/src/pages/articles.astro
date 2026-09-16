@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import PageHero from '../components/PageHero.astro';
+import { navItems } from '../data/navigation';
+
+const title = 'Articles | Frank Osasere Idugboe';
+---
+
+<BaseLayout
+  title={title}
+  description="Technical articles by Frank Osasere Idugboe covering AWS, Kubernetes, DevOps, infrastructure, cloud security, and troubleshooting."
+>
+  <SiteHeader navItems={navItems} />
+
+  <main>
+    <PageHero
+      eyebrow="Articles"
+      title="Technical writing grounded in engineering practice."
+      description="Articles and walkthroughs covering production incidents, Kubernetes, AWS, infrastructure automation, cloud security, and operational lessons."
+    />
+
+    <section class="bg-slate-50 py-16">
+      <div class="mx-auto max-w-4xl px-6 lg:px-8">
+        <p class="leading-8 text-slate-600">
+          Published technical writing and selected external articles will be
+          indexed here with links to the original publications.
+        </p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

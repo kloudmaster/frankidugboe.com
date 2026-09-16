@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import PageHero from '../../components/PageHero.astro';
+import { navItems } from '../../data/navigation';
+
+const title = 'Projects | Frank Osasere Idugboe';
+---
+
+<BaseLayout
+  title={title}
+  description="DevOps, Kubernetes, AWS, cloud security, Infrastructure as Code, and production engineering projects by Frank Osasere Idugboe."
+>
+  <SiteHeader navItems={navItems} />
+
+  <main>
+    <PageHero
+      eyebrow="Projects"
+      title="Engineering case studies from real infrastructure problems."
+      description="Deep dives into cloud architecture, Kubernetes troubleshooting, security automation, autoscaling, CI/CD, observability, and infrastructure design."
+    />
+
+    <section class="bg-slate-950 py-16 text-white">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="grid gap-6 lg:grid-cols-3">
+          <article class="rounded-2xl border border-slate-800 p-7">
+            <p class="text-sm font-semibold text-sky-400">Kubernetes</p>
+            <h2 class="mt-3 text-xl font-bold">
+              Kubernetes / Karpenter Incident Debugging
+            </h2>
+            <p class="mt-4 leading-7 text-slate-400">
+              Resource requests, AWS IAM trust, Karpenter, and EBS Availability
+              Zone affinity investigated as one production scheduling chain.
+            </p>
+          </article>
+
+          <article class="rounded-2xl border border-slate-800 p-7">
+            <p class="text-sm font-semibold text-sky-400">Cloud Security</p>
+            <h2 class="mt-3 text-xl font-bold">EBS Encryption Automation</h2>
+            <p class="mt-4 leading-7 text-slate-400">
+              AWS Config, Systems Manager, and Infrastructure as Code for
+              automated storage-security compliance.
+            </p>
+          </article>
+
+          <article class="rounded-2xl border border-slate-800 p-7">
+            <p class="text-sm font-semibold text-sky-400">Autoscaling</p>
+            <h2 class="mt-3 text-xl font-bold">
+              KEDA Event-Driven Autoscaling
+            </h2>
+            <p class="mt-4 leading-7 text-slate-400">
+              Event-driven Kubernetes workload scaling with operational
+              validation and observability.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

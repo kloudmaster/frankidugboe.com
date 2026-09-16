@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import PageHero from '../components/PageHero.astro';
+import { navItems } from '../data/navigation';
+
+const title = 'Contact | Frank Osasere Idugboe';
+---
+
+<BaseLayout
+  title={title}
+  description="Contact Frank Osasere Idugboe regarding Cloud, DevOps, infrastructure, security engineering, research, and professional collaboration."
+>
+  <SiteHeader navItems={navItems} />
+
+  <main>
+    <PageHero
+      eyebrow="Contact"
+      title="Start a professional conversation."
+      description="For Cloud, DevOps, infrastructure, cloud security, technical writing, research, and professional collaboration."
+    />
+
+    <section class="bg-white py-16">
+      <div class="mx-auto max-w-3xl px-6 lg:px-8">
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-8">
+          <h2 class="text-xl font-bold text-slate-950">Contact form</h2>
+
+          <p class="mt-4 leading-7 text-slate-600">
+            The secure serverless contact form will be connected here through
+            API Gateway, AWS Lambda, and Amazon SES. No private email address
+            will be exposed publicly.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
