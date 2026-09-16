@@ -5,11 +5,30 @@ import PageHero from '../components/PageHero.astro';
 import { navItems } from '../data/navigation';
 
 const title = 'Certifications | Frank Osasere Idugboe';
+
+const activeCertifications = [
+  'Aviatrix Multicloud Network Associate — 2025',
+  'OCI Certified DevOps Professional — 2025',
+  'OCI Certified Observability Professional — 2025',
+  'OCI Certified Multicloud Architect Professional — 2025',
+  'OCI AI Foundations Associate — 2025',
+  'GitHub Foundations — 2024',
+  'Google Cybersecurity Certificate — 2024',
+];
+
+const professionalTraining = [
+  'Mercor — Introduction to Agents — 2026',
+];
+
+const previouslyHeld = [
+  'AWS certifications — expired',
+  'Kubernetes and Cloud Native Associate (KCNA) — expired',
+];
 ---
 
 <BaseLayout
   title={title}
-  description="Current certifications, professional training, certification renewal work, and previously held credentials of Frank Osasere Idugboe."
+  description="Active certifications, professional training, AWS recertification work, and previously held credentials of Frank Osasere Idugboe."
 >
   <SiteHeader navItems={navItems} />
 
@@ -17,38 +36,86 @@ const title = 'Certifications | Frank Osasere Idugboe';
     <PageHero
       eyebrow="Certifications"
       title="Professional credentials with transparent status."
-      description="Current certifications, professional training, certifications in progress, and previously held credentials are separated clearly so their status is unambiguous."
+      description="Active certifications, professional training, certifications in progress, and previously held credentials are separated clearly so their current status is unambiguous."
     />
 
-    <section class="bg-white py-16">
+    <section class="bg-white py-20">
       <div class="mx-auto grid max-w-7xl gap-6 px-6 md:grid-cols-2 lg:px-8">
         <article class="rounded-2xl border border-slate-200 p-7">
-          <h2 class="text-xl font-bold text-slate-950">Active Certifications</h2>
-          <p class="mt-3 leading-7 text-slate-600">
-            Current verified professional certifications will be listed here.
+          <p class="text-sm font-semibold uppercase tracking-[0.16em] text-sky-700">
+            Current
+          </p>
+          <h2 class="mt-3 text-xl font-bold text-slate-950">
+            Active Certifications
+          </h2>
+
+          <ul class="mt-6 space-y-3">
+            {
+              activeCertifications.map((credential) => (
+                <li class="border-b border-slate-100 pb-3 text-sm leading-6 text-slate-600 last:border-0">
+                  {credential}
+                </li>
+              ))
+            }
+          </ul>
+        </article>
+
+        <article class="rounded-2xl border border-slate-200 p-7">
+          <p class="text-sm font-semibold uppercase tracking-[0.16em] text-sky-700">
+            Development
+          </p>
+          <h2 class="mt-3 text-xl font-bold text-slate-950">
+            In Progress
+          </h2>
+
+          <p class="mt-6 leading-7 text-slate-600">
+            AWS recertification is currently part of my professional
+            development plan, with previous AWS certifications treated
+            separately from active credentials until renewed.
           </p>
         </article>
 
         <article class="rounded-2xl border border-slate-200 p-7">
-          <h2 class="text-xl font-bold text-slate-950">In Progress</h2>
-          <p class="mt-3 leading-7 text-slate-600">
-            AWS recertification and continuing professional development.
+          <p class="text-sm font-semibold uppercase tracking-[0.16em] text-sky-700">
+            Learning
           </p>
+          <h2 class="mt-3 text-xl font-bold text-slate-950">
+            Professional Training
+          </h2>
+
+          <ul class="mt-6 space-y-3">
+            {
+              professionalTraining.map((credential) => (
+                <li class="text-sm leading-6 text-slate-600">
+                  {credential}
+                </li>
+              ))
+            }
+          </ul>
         </article>
 
-        <article class="rounded-2xl border border-slate-200 p-7">
-          <h2 class="text-xl font-bold text-slate-950">Professional Training</h2>
-          <p class="mt-3 leading-7 text-slate-600">
-            Includes Mercor — Introduction to Agents, completed in 2026.
+        <article class="rounded-2xl border border-slate-200 bg-slate-50 p-7">
+          <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+            Historical
           </p>
-        </article>
+          <h2 class="mt-3 text-xl font-bold text-slate-950">
+            Previously Held
+          </h2>
 
-        <article class="rounded-2xl border border-slate-200 p-7">
-          <h2 class="text-xl font-bold text-slate-950">Previously Held</h2>
-          <p class="mt-3 leading-7 text-slate-600">
-            Expired certifications, including previous AWS credentials and
-            KCNA, are retained here with their historical status clearly marked.
+          <p class="mt-4 text-sm leading-6 text-slate-600">
+            These credentials are retained for historical context and are not
+            presented as currently active.
           </p>
+
+          <ul class="mt-6 space-y-3">
+            {
+              previouslyHeld.map((credential) => (
+                <li class="text-sm leading-6 text-slate-600">
+                  {credential}
+                </li>
+              ))
+            }
+          </ul>
         </article>
       </div>
     </section>

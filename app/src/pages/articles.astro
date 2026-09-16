@@ -5,11 +5,32 @@ import PageHero from '../components/PageHero.astro';
 import { navItems } from '../data/navigation';
 
 const title = 'Articles | Frank Osasere Idugboe';
+
+const articles = [
+  {
+    title: 'Kubernetes at 3% CPU but Pods Still Pending',
+    subtitle: 'Debugging Requests, Karpenter, and EBS AZ Affinity',
+    category: 'AWS · Kubernetes · DevOps',
+    description:
+      'A practical incident walkthrough tracing pending Kubernetes workloads through resource requests, Karpenter, AWS IAM trust, and EBS Availability Zone affinity.',
+    url: 'https://dev.to/aws-builders/kubernetes-at-3-cpu-but-pods-still-pending-debugging-requests-karpenter-and-ebs-az-affinity-17jh',
+  },
+];
+
+const topics = [
+  'AWS',
+  'Kubernetes',
+  'DevOps',
+  'Cloud Security',
+  'Infrastructure as Code',
+  'Observability',
+  'Incident Engineering',
+];
 ---
 
 <BaseLayout
   title={title}
-  description="Technical articles by Frank Osasere Idugboe covering AWS, Kubernetes, DevOps, infrastructure, cloud security, and troubleshooting."
+  description="Technical writing by Frank Osasere Idugboe on AWS, Kubernetes, DevOps, Cloud Security, infrastructure automation, observability, and production troubleshooting."
 >
   <SiteHeader navItems={navItems} />
 
@@ -17,14 +38,75 @@ const title = 'Articles | Frank Osasere Idugboe';
     <PageHero
       eyebrow="Articles"
       title="Technical writing grounded in engineering practice."
-      description="Articles and walkthroughs covering production incidents, Kubernetes, AWS, infrastructure automation, cloud security, and operational lessons."
+      description="Practical articles covering AWS, Kubernetes, DevOps, Cloud Security, infrastructure automation, production incidents, observability, and operational lessons."
     />
 
-    <section class="bg-slate-50 py-16">
-      <div class="mx-auto max-w-4xl px-6 lg:px-8">
-        <p class="leading-8 text-slate-600">
-          Published technical writing and selected external articles will be
-          indexed here with links to the original publications.
+    <section class="bg-slate-50 py-20">
+      <div class="mx-auto max-w-6xl px-6 lg:px-8">
+        <div class="grid gap-8">
+          {
+            articles.map((article) => (
+              <article class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+                <p class="text-sm font-semibold uppercase tracking-[0.16em] text-sky-700">
+                  {article.category}
+                </p>
+
+                <h2 class="mt-4 text-2xl font-bold tracking-tight text-slate-950">
+                  {article.title}
+                </h2>
+
+                <p class="mt-2 text-lg font-medium text-slate-700">
+                  {article.subtitle}
+                </p>
+
+                <p class="mt-5 max-w-4xl leading-8 text-slate-600">
+                  {article.description}
+                </p>
+
+                <div class="mt-7 flex flex-wrap gap-4">
+                  <a
+                    href="/projects/karpenter-incident-debugging"
+                    class="font-semibold text-slate-950 hover:text-sky-700"
+                  >
+                    View portfolio case study →
+                  </a>
+
+                  <a
+                    href={article.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="font-semibold text-sky-700 hover:text-sky-600"
+                  >
+                    Read on DEV Community →
+                  </a>
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white py-20">
+      <div class="mx-auto max-w-6xl px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-slate-950">
+          Writing topics
+        </h2>
+
+        <div class="mt-6 flex flex-wrap gap-2">
+          {
+            topics.map((topic) => (
+              <span class="rounded-full border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700">
+                {topic}
+              </span>
+            ))
+          }
+        </div>
+
+        <p class="mt-8 max-w-4xl leading-8 text-slate-600">
+          I use technical writing to document engineering decisions,
+          troubleshooting methods, cloud architecture lessons, and practical
+          patterns that other engineers can reproduce and evaluate.
         </p>
       </div>
     </section>
