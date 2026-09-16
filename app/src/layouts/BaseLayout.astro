@@ -1,0 +1,28 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Frank Osasere Idugboe | Cloud & DevOps Engineer',
+  description = 'Frank Osasere Idugboe — Cloud & DevOps Engineer, AWS Community Builder, and Digital Forensics Researcher.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#020617" />
+    <title>{title}</title>
+  </head>
+
+  <body class="bg-white text-slate-950 antialiased">
+    <slot />
+  </body>
+</html>
