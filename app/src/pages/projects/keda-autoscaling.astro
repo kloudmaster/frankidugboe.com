@@ -1,0 +1,188 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { navItems } from '../../data/navigation';
+
+const title = 'KEDA Event-Driven Autoscaling | Frank Osasere Idugboe';
+
+const technologies = [
+  'KEDA',
+  'Kubernetes',
+  'Autoscaling',
+  'HPA',
+  'Metrics',
+  'Observability',
+  'Containers',
+];
+---
+
+<BaseLayout
+  title={title}
+  description="A KEDA Event-Driven Autoscaling proof of concept for Kubernetes workloads, with emphasis on triggers, observability, and operational validation."
+>
+  <SiteHeader navItems={navItems} />
+
+  <main>
+    <section class="bg-slate-950 py-20 text-white">
+      <div class="mx-auto max-w-5xl px-6 lg:px-8">
+        <a href="/projects" class="text-sm font-semibold text-sky-400 hover:text-sky-300">
+          ← Back to Projects
+        </a>
+
+        <p class="mt-10 text-sm font-semibold uppercase tracking-[0.2em] text-sky-400">
+          Cloud Native · Autoscaling
+        </p>
+
+        <h1 class="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
+          KEDA Event-Driven Autoscaling
+        </h1>
+
+        <p class="mt-6 max-w-3xl text-lg leading-8 text-slate-300">
+          A Kubernetes proof of concept exploring how KEDA can translate
+          external workload demand into dynamic pod scaling while preserving
+          clear operational visibility.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-2">
+          {
+            technologies.map((technology) => (
+              <span class="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-300">
+                {technology}
+              </span>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white py-20">
+      <div class="mx-auto max-w-4xl space-y-16 px-6 lg:px-8">
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Problem
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            CPU-based scaling does not represent every workload.
+          </h2>
+          <p class="mt-5 leading-8 text-slate-600">
+            Some services need to scale according to queue depth, event volume,
+            request demand, or another external signal rather than CPU or
+            memory alone. The proof of concept evaluated an event-driven
+            autoscaling model for Kubernetes workloads.
+          </p>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Context
+          </p>
+          <p class="mt-5 leading-8 text-slate-600">
+            Kubernetes Horizontal Pod Autoscaler provides a strong native
+            scaling foundation. KEDA extends that model by connecting external
+            event sources and metrics to Kubernetes scaling behavior.
+          </p>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Architecture
+          </p>
+          <div class="mt-6 rounded-2xl bg-slate-950 p-7 font-mono text-sm leading-7 text-slate-300">
+            <p>External Event / Metric Source</p>
+            <p class="pl-4">↓</p>
+            <p>KEDA Scaler</p>
+            <p class="pl-4">↓</p>
+            <p>ScaledObject</p>
+            <p class="pl-4">↓</p>
+            <p>Kubernetes HPA</p>
+            <p class="pl-4">↓</p>
+            <p>Application Pods</p>
+          </div>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Implementation
+          </p>
+          <div class="mt-5 space-y-5 leading-8 text-slate-600">
+            <p>
+              The proof of concept defined a KEDA ScaledObject that connected a
+              workload with an external scaling signal.
+            </p>
+            <p>
+              Minimum and maximum replica boundaries were used to keep scaling
+              behavior within controlled operational limits.
+            </p>
+            <p>
+              Workload behavior was observed as demand changed so that scale-up
+              and scale-down behavior could be validated rather than assumed.
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Security
+          </p>
+          <p class="mt-5 leading-8 text-slate-600">
+            Event-driven scaling integrations should avoid exposing
+            credentials directly in Kubernetes manifests. Authentication
+            material should be managed through appropriate secret-management
+            and workload-identity mechanisms for the target environment.
+          </p>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Observability
+          </p>
+          <p class="mt-5 leading-8 text-slate-600">
+            Observability is required to distinguish legitimate scaling from
+            misconfiguration. Replica counts, trigger metrics, HPA behavior,
+            application demand, pod health, and scaling events should be viewed
+            together.
+          </p>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Results
+          </p>
+          <p class="mt-5 leading-8 text-slate-600">
+            The proof of concept demonstrated the operational pattern for
+            connecting event demand to Kubernetes autoscaling through KEDA and
+            provided a basis for evaluating event-driven scaling before
+            production adoption.
+          </p>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Lessons
+          </p>
+          <div class="mt-5 space-y-4 leading-8 text-slate-600">
+            <p>Scaling signals should represent actual workload demand.</p>
+            <p>Replica boundaries remain important even with dynamic scaling.</p>
+            <p>Autoscaling must be observable, not treated as a black box.</p>
+            <p>Scale-down behavior deserves as much validation as scale-up behavior.</p>
+          </div>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Technologies
+          </p>
+          <div class="mt-5 flex flex-wrap gap-2">
+            {
+              technologies.map((technology) => (
+                <span class="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700">
+                  {technology}
+                </span>
+              ))
+            }
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
