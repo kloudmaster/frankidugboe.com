@@ -10,6 +10,91 @@ const {
   title = 'Frank Osasere Idugboe | Cloud & DevOps Engineer',
   description = 'Frank Osasere Idugboe — Cloud & DevOps Engineer, AWS Community Builder, and Digital Forensics Researcher.',
 } = Astro.props;
+
+const siteURL = 'https://frankidugboe.com';
+const canonicalURL = new URL(
+  Astro.url.pathname,
+  Astro.site ?? siteURL,
+).toString();
+
+const personSchema = {
+  "@type": "Person",
+  "@id": `${siteURL}/#person`,
+  "name": "Frank Osasere Idugboe",
+  "url": siteURL,
+  "description":
+    "Cloud & DevOps Engineer, AWS Community Builder, and Digital Forensics Researcher.",
+  "jobTitle": [
+    "Cloud & DevOps Engineer",
+    "Digital Forensics Researcher",
+  ],
+  "affiliation": {
+    "@type": "CollegeOrUniversity",
+    "name": "UNIFESSPA",
+  },
+  "sameAs": [
+    "https://github.com/kloudmaster",
+  ],
+  "knowsAbout": [
+    "AWS",
+    "DevOps",
+    "Kubernetes",
+    "Infrastructure as Code",
+    "Cloud Security",
+    "Cloud Forensics",
+    "IoT Forensics",
+    "Digital Forensics",
+  ],
+};
+
+const websiteSchema = {
+  "@type": "WebSite",
+  "@id": `${siteURL}/#website`,
+  "url": siteURL,
+  "name": "Frank Osasere Idugboe",
+  "description":
+    "Professional portfolio of Frank Osasere Idugboe covering Cloud, DevOps, AWS, Cloud Security, and Digital Forensics.",
+  "publisher": {
+    "@id": `${siteURL}/#person`,
+  },
+};
+
+const profilePageSchema = {
+  "@type": "ProfilePage",
+  "@id": `${siteURL}/#profilepage`,
+  "url": siteURL,
+  "name": "Frank Osasere Idugboe",
+  "description":
+    "Professional profile of Frank Osasere Idugboe — Cloud & DevOps Engineer, AWS Community Builder, and Digital Forensics Researcher.",
+  "isPartOf": {
+    "@id": `${siteURL}/#website`,
+  },
+  "mainEntity": {
+    "@id": `${siteURL}/#person`,
+  },
+};
+
+const webPageSchema = {
+  "@type": "WebPage",
+  "@id": `${canonicalURL}#webpage`,
+  "url": canonicalURL,
+  "name": title,
+  "description": description,
+  "isPartOf": {
+    "@id": `${siteURL}/#website`,
+  },
+  "about": {
+    "@id": `${siteURL}/#person`,
+  },
+};
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph":
+    Astro.url.pathname === '/'
+      ? [personSchema, websiteSchema, profilePageSchema]
+      : [personSchema, websiteSchema, webPageSchema],
+};
 ---
 
 <!doctype html>
@@ -17,9 +102,28 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
+
+    <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#020617" />
-    <title>{title}</title>
+
+    <link rel="canonical" href={canonicalURL} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Frank Osasere Idugboe" />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(structuredData)}
+    ></script>
   </head>
 
   <body class="bg-white text-slate-950 antialiased">
