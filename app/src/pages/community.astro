@@ -5,11 +5,45 @@ import PageHero from '../components/PageHero.astro';
 import { navItems } from '../data/navigation';
 
 const title = 'Community | Frank Osasere Idugboe';
+
+const communityAreas = [
+  {
+    title: 'AWS Community Builder',
+    description:
+      'Community participation in the Cloud Operations category, sharing practical experience around AWS infrastructure, DevOps, reliability, troubleshooting, and Cloud Security.',
+  },
+  {
+    title: 'Technical Writing',
+    description:
+      'Publishing engineering walkthroughs and incident-focused content that turns production troubleshooting into reusable technical knowledge.',
+  },
+  {
+    title: 'Mentoring',
+    description:
+      'Supporting engineers and technology learners through practical guidance around cloud infrastructure, DevOps practices, certification development, and professional growth.',
+  },
+  {
+    title: 'Knowledge Sharing',
+    description:
+      'Contributing to practitioner discussions, documentation, peer learning, and community education around AWS and cloud-native engineering.',
+  },
+];
+
+const focusAreas = [
+  'AWS',
+  'DevOps',
+  'Cloud Operations',
+  'Cloud Security',
+  'Kubernetes',
+  'Infrastructure as Code',
+  'Observability',
+  'Technical Writing',
+];
 ---
 
 <BaseLayout
   title={title}
-  description="Cloud community participation, technical mentoring, and knowledge-sharing activities of Frank Osasere Idugboe."
+  description="AWS Community Builder participation, technical writing, mentoring, and cloud engineering knowledge sharing by Frank Osasere Idugboe."
 >
   <SiteHeader navItems={navItems} />
 
@@ -17,18 +51,55 @@ const title = 'Community | Frank Osasere Idugboe';
     <PageHero
       eyebrow="Community"
       title="Engineering knowledge is more valuable when it is shared."
-      description="Community work spanning AWS, technical writing, mentoring, practitioner education, and helping engineers understand cloud infrastructure through practical experience."
+      description="Community work spanning AWS, Cloud Operations, Technical Writing, Mentoring, Knowledge Sharing, DevOps, and Cloud Security."
     />
 
-    <section class="bg-slate-50 py-16">
-      <div class="mx-auto max-w-4xl px-6 lg:px-8">
-        <h2 class="text-2xl font-bold text-slate-950">AWS Community Builder</h2>
+    <section class="bg-white py-20">
+      <div class="mx-auto max-w-6xl px-6 lg:px-8">
+        <div class="grid gap-6 md:grid-cols-2">
+          {
+            communityAreas.map((area) => (
+              <article class="rounded-2xl border border-slate-200 p-7">
+                <h2 class="text-xl font-bold text-slate-950">
+                  {area.title}
+                </h2>
 
-        <p class="mt-5 leading-8 text-slate-600">
-          Community participation includes AWS-focused knowledge sharing,
-          technical content, mentoring, and practitioner discussions around
-          cloud operations and security.
+                <p class="mt-4 leading-7 text-slate-600">
+                  {area.description}
+                </p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-slate-950 py-20 text-white">
+      <div class="mx-auto max-w-6xl px-6 lg:px-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-400">
+          Community focus
         </p>
+
+        <h2 class="mt-3 max-w-3xl text-3xl font-bold tracking-tight">
+          Practical engineering experience translated into reusable knowledge.
+        </h2>
+
+        <p class="mt-6 max-w-3xl leading-8 text-slate-300">
+          My community participation centers on documenting what works,
+          explaining engineering decisions, helping others troubleshoot
+          infrastructure problems, and sharing lessons from hands-on cloud and
+          DevOps work.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-2">
+          {
+            focusAreas.map((area) => (
+              <span class="rounded-full border border-slate-700 px-3 py-1.5 text-sm text-slate-300">
+                {area}
+              </span>
+            ))
+          }
+        </div>
       </div>
     </section>
   </main>
