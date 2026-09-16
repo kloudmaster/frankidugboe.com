@@ -5,6 +5,71 @@ import PageHero from '../components/PageHero.astro';
 import { navItems } from '../data/navigation';
 
 const title = 'Experience | Frank Osasere Idugboe';
+
+const roles = [
+  {
+    company: 'OxygenX',
+    role: 'DevOps Engineer — Cloud Security Focus',
+    period: 'Oct 2024 – Present',
+    location: 'Lagos, Nigeria',
+    description:
+      'Cloud infrastructure, DevOps operations, production reliability, security-focused engineering, automation, and operational troubleshooting.',
+    technologies: ['AWS', 'Kubernetes', 'Terraform', 'CI/CD', 'Cloud Security'],
+  },
+  {
+    company: 'Yebox Technologies',
+    role: 'Lead DevOps Engineer',
+    period: 'Apr 2021 – May 2025',
+    location: 'Lagos, Nigeria',
+    description:
+      'Led DevOps and cloud infrastructure work across AWS environments, Kubernetes platforms, Infrastructure as Code, deployment automation, observability, networking, IAM, and production operations.',
+    technologies: [
+      'AWS',
+      'EKS',
+      'Terraform',
+      'Jenkins',
+      'Ansible',
+      'Prometheus',
+      'Grafana',
+      'ELK',
+      'CloudWatch',
+      'Helm',
+    ],
+  },
+  {
+    company: 'The American Lotto',
+    role: 'DevOps Engineer',
+    period: 'Oct 2023 – Jun 2024',
+    description:
+      'Supported DevOps engineering, application delivery, cloud infrastructure, automation, and production operations.',
+    technologies: ['AWS', 'DevOps', 'CI/CD', 'Automation'],
+  },
+  {
+    company: 'Intersource Global Inc.',
+    role: 'DevSecOps Engineer',
+    period: 'Feb 2021 – Aug 2023',
+    location: 'Ontario, Canada · Remote',
+    description:
+      'Worked remotely across DevSecOps, infrastructure automation, cloud operations, secure delivery practices, and engineering support.',
+    technologies: ['DevSecOps', 'Cloud', 'Automation', 'Security'],
+  },
+  {
+    company: 'Colarriod Creations',
+    role: 'Technical / Cloud Engineer',
+    period: 'Feb 2018 – Jan 2021',
+    description:
+      'Worked across technical operations and cloud engineering as infrastructure responsibilities expanded toward automation and modern cloud platforms.',
+    technologies: ['Cloud Engineering', 'Infrastructure', 'Operations'],
+  },
+  {
+    company: 'Heva Savvy School',
+    role: 'ICT Manager',
+    period: 'Sep 2016 – Dec 2017',
+    description:
+      'Managed ICT operations and technical systems, establishing the operational foundation that preceded later cloud and DevOps engineering roles.',
+    technologies: ['ICT Operations', 'Systems Administration', 'Support'],
+  },
+];
 ---
 
 <BaseLayout
@@ -16,17 +81,92 @@ const title = 'Experience | Frank Osasere Idugboe';
   <main>
     <PageHero
       eyebrow="Experience"
-      title="Cloud infrastructure and production engineering experience."
-      description="A career spanning infrastructure operations, AWS, Kubernetes, Infrastructure as Code, CI/CD, observability, cloud security, and engineering leadership."
+      title="8+ years across cloud infrastructure, automation, security, and production operations."
+      description="Professional experience spanning AWS, Kubernetes, Terraform, Infrastructure as Code, CI/CD, cloud security, observability, incident troubleshooting, and technical leadership."
     />
 
-    <section class="bg-slate-50 py-16">
-      <div class="mx-auto max-w-4xl px-6 lg:px-8">
-        <p class="text-lg leading-8 text-slate-600">
-          Detailed role history, engineering responsibilities, production
-          outcomes, and selected achievements will be presented here as
-          structured experience entries.
-        </p>
+    <section class="bg-slate-50 py-20">
+      <div class="mx-auto max-w-5xl px-6 lg:px-8">
+        <div class="relative">
+          <div
+            class="absolute bottom-0 left-[7px] top-2 hidden w-px bg-slate-300 sm:block"
+            aria-hidden="true"
+          ></div>
+
+          <div class="space-y-10">
+            {
+              roles.map((role) => (
+                <article class="relative sm:pl-12">
+                  <div
+                    class="absolute left-0 top-2 hidden h-[15px] w-[15px] rounded-full border-4 border-slate-50 bg-sky-600 sm:block"
+                    aria-hidden="true"
+                  ></div>
+
+                  <div class="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+                    <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                      <div>
+                        <p class="text-sm font-semibold text-sky-700">
+                          {role.company}
+                        </p>
+
+                        <h2 class="mt-1 text-xl font-bold text-slate-950">
+                          {role.role}
+                        </h2>
+
+                        {
+                          role.location && (
+                            <p class="mt-2 text-sm text-slate-500">
+                              {role.location}
+                            </p>
+                          )
+                        }
+                      </div>
+
+                      <p class="shrink-0 text-sm font-semibold text-slate-500">
+                        {role.period}
+                      </p>
+                    </div>
+
+                    <p class="mt-5 leading-7 text-slate-600">
+                      {role.description}
+                    </p>
+
+                    <div class="mt-6 flex flex-wrap gap-2">
+                      {
+                        role.technologies.map((technology) => (
+                          <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                            {technology}
+                          </span>
+                        ))
+                      }
+                    </div>
+                  </div>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-slate-950 py-20 text-white">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="max-w-3xl">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-sky-400">
+            Engineering scope
+          </p>
+
+          <h2 class="mt-4 text-3xl font-bold tracking-tight">
+            Production-focused cloud engineering
+          </h2>
+
+          <p class="mt-5 leading-8 text-slate-400">
+            Across these roles, my work has included AWS architecture,
+            Kubernetes, Terraform, CloudFormation, CI/CD automation, IAM,
+            networking, observability, cloud security, container platforms,
+            deployment engineering, and production incident troubleshooting.
+          </p>
+        </div>
       </div>
     </section>
   </main>
