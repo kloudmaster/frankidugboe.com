@@ -42,3 +42,13 @@ output "cloudfront_domain_name" {
   description = "AWS-assigned CloudFront distribution domain name."
   value       = module.cloudfront.distribution_domain_name
 }
+
+output "github_plan_role_arn" {
+  description = "ARN of the GitHub Actions Terraform plan role."
+  value       = module.iam.github_plan_role_arn
+}
+
+output "github_deploy_role_arn" {
+  description = "ARN of the GitHub Actions production deploy role."
+  value       = module.iam.github_deploy_role_arn
+}

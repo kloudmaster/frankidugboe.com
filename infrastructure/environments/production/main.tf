@@ -38,3 +38,18 @@ module "cloudfront" {
     "www.${var.domain_name}",
   ]
 }
+
+module "iam" {
+  source = "../../modules/iam"
+
+  github_repository_owner = "kloudmaster"
+  github_repository_name  = "frankidugboe.com"
+
+  state_bucket_name = "frankidugboe-com-terraform-state-216066926519"
+  state_key         = "production/terraform.tfstate"
+
+  site_bucket_name            = module.s3.bucket_name
+  cloudfront_distribution_arn = module.cloudfront.distribution_arn
+  route53_zone_id             = module.route53.zone_id
+  acm_certificate_arn         = module.acm.certificate_arn
+}
