@@ -123,6 +123,19 @@ run "keeps_plan_role_read_only" {
   }
 
   assert {
+    condition = anytrue([
+      for statement in jsondecode(
+        aws_iam_role_policy.github_plan_permissions.policy
+        ).Statement : (
+        contains(statement.Resource, "arn:aws:s3:::frankidugboe-com-origin-216066926519") &&
+        contains(statement.Action, "s3:GetBucketAcl")
+      )
+    ])
+
+    error_message = "Plan role must be able to read the site bucket ACL during Terraform refresh."
+  }
+
+  assert {
     condition = !contains(
       flatten([
         for statement in jsondecode(

@@ -144,6 +144,7 @@ locals {
         Effect = "Allow"
 
         Action = [
+          "s3:GetBucketAcl",
           "s3:GetBucketLocation",
           "s3:GetBucketOwnershipControls",
           "s3:GetBucketPolicy",
