@@ -17,3 +17,8 @@ output "origin_access_control_id" {
   description = "ID of the CloudFront Origin Access Control."
   value       = aws_cloudfront_origin_access_control.this.id
 }
+
+output "hosted_zone_id" {
+  description = "Route 53 hosted zone ID used by the CloudFront distribution."
+  value       = aws_cloudfront_distribution.this.hosted_zone_id
+}
