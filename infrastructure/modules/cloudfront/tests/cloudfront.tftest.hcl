@@ -107,6 +107,14 @@ run "configures_secure_static_site_distribution" {
     condition     = aws_cloudfront_distribution.this.viewer_certificate[0].minimum_protocol_version == "TLSv1.2_2021"
     error_message = "CloudFront must enforce TLSv1.2_2021 or newer."
   }
+
+  assert {
+    condition = (
+      aws_cloudfront_distribution.this.default_cache_behavior[0].response_headers_policy_id
+      == "67f7725c-6f97-4210-82d7-5512b31e9d03"
+    )
+    error_message = "CloudFront must attach the AWS managed SecurityHeadersPolicy."
+  }
 }
 
 run "attaches_viewer_request_function" {

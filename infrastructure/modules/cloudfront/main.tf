@@ -43,6 +43,9 @@ resource "aws_cloudfront_distribution" "this" {
     # AWS managed CachingOptimized policy.
     cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
 
+    # AWS managed SecurityHeadersPolicy.
+    response_headers_policy_id = "67f7725c-6f97-4210-82d7-5512b31e9d03"
+
     function_association {
       event_type   = "viewer-request"
       function_arn = aws_cloudfront_function.viewer_request.arn
