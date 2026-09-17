@@ -21,7 +21,7 @@ run "creates_github_actions_oidc_provider" {
   }
 
   assert {
-    condition = aws_iam_openid_connect_provider.github.url == "https://token.actions.githubusercontent.com"
+    condition     = aws_iam_openid_connect_provider.github.url == "https://token.actions.githubusercontent.com"
     error_message = "GitHub Actions OIDC provider must use token.actions.githubusercontent.com."
   }
 
@@ -74,12 +74,12 @@ run "keeps_plan_role_read_only" {
     github_repository_owner = "kloudmaster"
     github_repository_name  = "frankidugboe.com"
 
-    state_bucket_name            = "frankidugboe-com-terraform-state-216066926519"
-    state_key                    = "production/terraform.tfstate"
-    site_bucket_name             = "frankidugboe-com-origin-216066926519"
-    cloudfront_distribution_arn  = "arn:aws:cloudfront::216066926519:distribution/E1AN3BXJ4E5SB7"
-    route53_zone_id              = "Z05203182KTV9HKTZIEXD"
-    acm_certificate_arn          = "arn:aws:acm:us-east-1:216066926519:certificate/60ae8517-2dd1-4399-b0a2-2f883634cbfc"
+    state_bucket_name           = "frankidugboe-com-terraform-state-216066926519"
+    state_key                   = "production/terraform.tfstate"
+    site_bucket_name            = "frankidugboe-com-origin-216066926519"
+    cloudfront_distribution_arn = "arn:aws:cloudfront::216066926519:distribution/E1AN3BXJ4E5SB7"
+    route53_zone_id             = "Z05203182KTV9HKTZIEXD"
+    acm_certificate_arn         = "arn:aws:acm:us-east-1:216066926519:certificate/60ae8517-2dd1-4399-b0a2-2f883634cbfc"
   }
 
   assert {
@@ -151,12 +151,12 @@ run "scopes_deploy_role_without_iam_self_modification" {
     github_repository_owner = "kloudmaster"
     github_repository_name  = "frankidugboe.com"
 
-    state_bucket_name            = "frankidugboe-com-terraform-state-216066926519"
-    state_key                    = "production/terraform.tfstate"
-    site_bucket_name             = "frankidugboe-com-origin-216066926519"
-    cloudfront_distribution_arn  = "arn:aws:cloudfront::216066926519:distribution/E1AN3BXJ4E5SB7"
-    route53_zone_id              = "Z05203182KTV9HKTZIEXD"
-    acm_certificate_arn          = "arn:aws:acm:us-east-1:216066926519:certificate/60ae8517-2dd1-4399-b0a2-2f883634cbfc"
+    state_bucket_name           = "frankidugboe-com-terraform-state-216066926519"
+    state_key                   = "production/terraform.tfstate"
+    site_bucket_name            = "frankidugboe-com-origin-216066926519"
+    cloudfront_distribution_arn = "arn:aws:cloudfront::216066926519:distribution/E1AN3BXJ4E5SB7"
+    route53_zone_id             = "Z05203182KTV9HKTZIEXD"
+    acm_certificate_arn         = "arn:aws:acm:us-east-1:216066926519:certificate/60ae8517-2dd1-4399-b0a2-2f883634cbfc"
   }
 
   assert {
