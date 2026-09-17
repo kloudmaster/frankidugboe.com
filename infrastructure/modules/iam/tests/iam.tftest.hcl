@@ -105,16 +105,19 @@ run "keeps_plan_role_read_only" {
   }
 
   assert {
-    condition = !contains(
-      flatten([
-        for statement in jsondecode(
-          aws_iam_role_policy.github_plan_permissions.policy
-        ).Statement : statement.Action
-      ]),
-      "s3:PutObject",
-    )
+    condition = !anytrue([
+      for statement in jsondecode(
+        aws_iam_role_policy.github_plan_permissions.policy
+        ).Statement : (
+        contains(
+          statement.Resource,
+          "arn:aws:s3:::frankidugboe-com-terraform-state-216066926519/production/terraform.tfstate",
+        ) &&
+        contains(statement.Action, "s3:PutObject")
+      )
+    ])
 
-    error_message = "Plan role must not be able to write Terraform state or site objects."
+    error_message = "Plan role must not be able to write the production Terraform state object."
   }
 
   assert {
@@ -340,5 +343,59 @@ run "supports_non_iam_terraform_apply" {
     ])
 
     error_message = "Full Terraform deployment permissions must not introduce IAM self-modification."
+  }
+}
+
+run "supports_s3_native_state_locking" {
+  command = plan
+
+  variables {
+    github_repository_owner = "kloudmaster"
+    github_repository_name  = "frankidugboe.com"
+
+    state_bucket_name           = "frankidugboe-com-terraform-state-216066926519"
+    state_key                   = "production/terraform.tfstate"
+    site_bucket_name            = "frankidugboe-com-origin-216066926519"
+    cloudfront_distribution_arn = "arn:aws:cloudfront::216066926519:distribution/E1AN3BXJ4E5SB7"
+    route53_zone_id             = "Z05203182KTV9HKTZIEXD"
+    acm_certificate_arn         = "arn:aws:acm:us-east-1:216066926519:certificate/60ae8517-2dd1-4399-b0a2-2f883634cbfc"
+  }
+
+  assert {
+    condition = anytrue([
+      for statement in jsondecode(
+        aws_iam_role_policy.github_plan_permissions.policy
+        ).Statement : (
+        try(statement.Sid, "") == "TerraformLockfileAccess" &&
+        contains(
+          statement.Resource,
+          "arn:aws:s3:::frankidugboe-com-terraform-state-216066926519/production/terraform.tfstate.tflock",
+        ) &&
+        contains(statement.Action, "s3:GetObject") &&
+        contains(statement.Action, "s3:PutObject") &&
+        contains(statement.Action, "s3:DeleteObject")
+      )
+    ])
+
+    error_message = "Plan role must have GetObject, PutObject, and DeleteObject on the exact Terraform lock file."
+  }
+
+  assert {
+    condition = anytrue([
+      for statement in jsondecode(
+        aws_iam_role_policy.github_deploy_permissions.policy
+        ).Statement : (
+        try(statement.Sid, "") == "TerraformLockfileAccess" &&
+        contains(
+          statement.Resource,
+          "arn:aws:s3:::frankidugboe-com-terraform-state-216066926519/production/terraform.tfstate.tflock",
+        ) &&
+        contains(statement.Action, "s3:GetObject") &&
+        contains(statement.Action, "s3:PutObject") &&
+        contains(statement.Action, "s3:DeleteObject")
+      )
+    ])
+
+    error_message = "Deploy role must have GetObject, PutObject, and DeleteObject on the exact Terraform lock file."
   }
 }

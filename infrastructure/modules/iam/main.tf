@@ -80,8 +80,9 @@ resource "aws_iam_role" "github_deploy" {
 }
 
 locals {
-  state_bucket_arn = "arn:aws:s3:::${var.state_bucket_name}"
-  state_object_arn = "${local.state_bucket_arn}/${var.state_key}"
+  state_bucket_arn   = "arn:aws:s3:::${var.state_bucket_name}"
+  state_object_arn   = "${local.state_bucket_arn}/${var.state_key}"
+  state_lockfile_arn = "${local.state_object_arn}.tflock"
 
   site_bucket_arn  = "arn:aws:s3:::${var.site_bucket_name}"
   site_objects_arn = "${local.site_bucket_arn}/*"
@@ -102,6 +103,20 @@ locals {
 
         Resource = [
           local.state_object_arn,
+        ]
+      },
+      {
+        Sid    = "TerraformLockfileAccess"
+        Effect = "Allow"
+
+        Action = [
+          "s3:DeleteObject",
+          "s3:GetObject",
+          "s3:PutObject",
+        ]
+
+        Resource = [
+          local.state_lockfile_arn,
         ]
       },
       {
@@ -222,6 +237,20 @@ locals {
 
         Resource = [
           local.state_object_arn,
+        ]
+      },
+      {
+        Sid    = "TerraformLockfileAccess"
+        Effect = "Allow"
+
+        Action = [
+          "s3:DeleteObject",
+          "s3:GetObject",
+          "s3:PutObject",
+        ]
+
+        Resource = [
+          local.state_lockfile_arn,
         ]
       },
       {
