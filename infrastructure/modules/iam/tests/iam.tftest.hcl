@@ -136,6 +136,38 @@ run "keeps_plan_role_read_only" {
   }
 
   assert {
+    condition = alltrue([
+      for action in [
+        "s3:GetAccelerateConfiguration",
+        "s3:GetBucketAcl",
+        "s3:GetBucketCORS",
+        "s3:GetBucketLocation",
+        "s3:GetBucketLogging",
+        "s3:GetBucketObjectLockConfiguration",
+        "s3:GetBucketPolicy",
+        "s3:GetBucketRequestPayment",
+        "s3:GetBucketTagging",
+        "s3:GetBucketVersioning",
+        "s3:GetBucketWebsite",
+        "s3:GetEncryptionConfiguration",
+        "s3:GetLifecycleConfiguration",
+        "s3:GetReplicationConfiguration",
+        "s3:ListBucket",
+        ] : contains(
+        flatten([
+          for statement in jsondecode(
+            aws_iam_role_policy.github_plan_permissions.policy
+          ).Statement :
+          statement.Sid == "SiteBucketRead" ? statement.Action : []
+        ]),
+        action,
+      )
+    ])
+
+    error_message = "Plan role must include the complete read-only S3 permission set required to refresh aws_s3_bucket."
+  }
+
+  assert {
     condition = !contains(
       flatten([
         for statement in jsondecode(
