@@ -1,0 +1,74 @@
+# Checkov policy configuration for frankidugboe.com
+#
+# This file encodes deliberate security-policy decisions for the portfolio
+# infrastructure. Every skipped check below is either a false positive, a
+# control that is not applicable to a static-site threat model, or an
+# accepted risk / deferred item with a named future phase.
+#
+# It is auto-loaded by `checkov -d infrastructure` when run from the repo
+# root (the CI working directory). See docs/security-policy.md for the full
+# rationale and review cadence.
+#
+# Checks intentionally NOT skipped (resolved in Terraform instead):
+#   CKV2_AWS_61  S3 lifecycle configuration  -> implemented on both buckets
+
+framework:
+  - terraform
+
+skip-path:
+  # Terraform native test files are not deployable config.
+  - (^|.*/)tests(/.*)?$
+
+skip-check:
+  # --- False positive -------------------------------------------------------
+  # CKV2_AWS_32: The CloudFront distribution DOES attach the AWS-managed
+  # SecurityHeadersPolicy (67f7725c-...) by ID, verified live at the public
+  # endpoint. Checkov's graph check only recognizes a response headers policy
+  # supplied as a resource or data source, not a managed policy referenced by
+  # ID, so it reports a false positive.
+  - CKV2_AWS_32
+
+  # --- Not applicable to a single-origin static site ------------------------
+  # CKV_AWS_310: Origin failover requires an origin group with 2+ origins.
+  # This site has one private S3 origin by design; failover is N/A.
+  - CKV_AWS_310
+  # CKV_AWS_374: Geo restriction. This is a public global professional
+  # portfolio; serving all geographies is intentional.
+  - CKV_AWS_374
+  # CKV2_AWS_62: S3 event notifications. Neither the static origin bucket nor
+  # the Terraform state bucket has an event-driven consumer.
+  - CKV2_AWS_62
+
+  # --- Accepted risk (documented) -------------------------------------------
+  # CKV_AWS_144: Cross-region replication. Not warranted: the origin bucket is
+  # fully rebuilt from Git on every deploy, and state is versioned + recoverable.
+  # CRR adds ongoing cost and a second bucket for no meaningful RPO gain here.
+  - CKV_AWS_144
+  # CKV_AWS_145: Customer-managed KMS encryption. Buckets use SSE-S3 (AES256).
+  # The origin holds only public static assets; the state bucket holds no
+  # secrets. SSE-S3 is sufficient; CMK adds key-management cost/complexity.
+  # Mirrors the Trivy AWS-0132 decision in .trivyignore.
+  - CKV_AWS_145
+
+  # --- Deferred: WAF (revisit in Phase E, with the contact backend) ---------
+  # A WAF delivers little value in front of a pure static S3 origin with no
+  # compute. It becomes worthwhile once the API Gateway/Lambda contact backend
+  # exists, where it will be placed. Mirrors Trivy AWS-0011.
+  - CKV_AWS_68
+  # CKV2_AWS_47: Log4j AMR on the CloudFront WAF ACL. Depends on the WAF above.
+  - CKV2_AWS_47
+
+  # --- Deferred: observability (Phase F) ------------------------------------
+  # CKV_AWS_86: CloudFront access logging. Requires a log-destination bucket
+  # and belongs to the observability phase; deferred to avoid premature sprawl.
+  - CKV_AWS_86
+  # CKV_AWS_18: S3 server access logging. Same reasoning as above; needs a
+  # dedicated log bucket that itself must be governed. Deferred to Phase F.
+  - CKV_AWS_18
+  # CKV2_AWS_39: Route 53 DNS query logging. Observability concern; Phase F.
+  - CKV2_AWS_39
+
+  # --- Deferred: DNSSEC ------------------------------------------------------
+  # CKV2_AWS_38: Route 53 DNSSEC signing. Real hardening but moderate effort
+  # (KMS key + KSK + parent DS record at the registrar). Scheduled post-launch.
+  - CKV2_AWS_38
