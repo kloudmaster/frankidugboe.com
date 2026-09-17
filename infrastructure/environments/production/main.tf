@@ -23,3 +23,18 @@ module "s3" {
 
   bucket_name = local.origin_bucket_name
 }
+
+module "cloudfront" {
+  source = "../../modules/cloudfront"
+
+  name                = var.domain_name
+  origin_domain_name  = module.s3.bucket_regional_domain_name
+  origin_bucket_name  = module.s3.bucket_name
+  origin_bucket_arn   = module.s3.bucket_arn
+  acm_certificate_arn = module.acm.certificate_arn
+
+  aliases = [
+    var.domain_name,
+    "www.${var.domain_name}",
+  ]
+}

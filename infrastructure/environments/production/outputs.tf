@@ -24,6 +24,21 @@ output "s3_origin_bucket_arn" {
 }
 
 output "s3_origin_regional_domain_name" {
-  description = "Regional S3 domain name that CloudFront will use as its origin."
+  description = "Regional S3 domain name that CloudFront uses as its origin."
   value       = module.s3.bucket_regional_domain_name
+}
+
+output "cloudfront_distribution_id" {
+  description = "ID of the CloudFront distribution."
+  value       = module.cloudfront.distribution_id
+}
+
+output "cloudfront_distribution_arn" {
+  description = "ARN of the CloudFront distribution."
+  value       = module.cloudfront.distribution_arn
+}
+
+output "cloudfront_domain_name" {
+  description = "AWS-assigned CloudFront distribution domain name."
+  value       = module.cloudfront.distribution_domain_name
 }
