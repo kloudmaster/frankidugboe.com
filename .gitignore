@@ -8,6 +8,10 @@ dist/
 .env.*
 !.env.example
 
+# direnv
+.envrc
+.direnv/
+
 # Terraform
 .terraform/
 *.tfstate

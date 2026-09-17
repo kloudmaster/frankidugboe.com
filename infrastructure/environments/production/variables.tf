@@ -4,6 +4,12 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+variable "aws_profile" {
+  description = "AWS named profile for local runs. Leave empty in CI so OIDC env credentials are used."
+  type        = string
+  default     = ""
+}
+
 variable "domain_name" {
   description = "Canonical domain for the portfolio."
   type        = string
