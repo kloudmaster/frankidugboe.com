@@ -1,0 +1,135 @@
+name: Production Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Only one production deployment at a time. Do not cancel an in-flight
+# deploy; queue the new one so infrastructure convergence stays consistent.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    name: Terraform apply, build and publish
+    runs-on: ubuntu-latest
+    environment: production
+
+    env:
+      TF_WORKDIR: infrastructure/environments/production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.16.3
+          terraform_wrapper: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Configure AWS credentials with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: github-production-deploy
+
+      - name: Initialize production backend
+        run: terraform -chdir="$TF_WORKDIR" init -input=false
+
+      - name: Terraform apply
+        run: |
+          terraform -chdir="$TF_WORKDIR" apply \
+            -input=false -no-color -auto-approve -lock-timeout=5m
+
+      - name: Export infrastructure outputs
+        id: tf
+        run: |
+          bucket="$(terraform -chdir="$TF_WORKDIR" output -raw s3_origin_bucket_name)"
+          distribution_id="$(terraform -chdir="$TF_WORKDIR" output -raw cloudfront_distribution_id)"
+          {
+            echo "bucket=${bucket}"
+            echo "distribution_id=${distribution_id}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Install frontend dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Build site
+        working-directory: app
+        run: npm run build
+
+      # Upload fingerprinted assets first with immutable, long-lived caching.
+      # These filenames are content-hashed, so they are safe to cache forever.
+      # No --delete here: this pass only adds/updates the _astro/ prefix.
+      - name: Publish hashed assets (immutable cache)
+        run: |
+          aws s3 sync app/dist "s3://${{ steps.tf.outputs.bucket }}" \
+            --exclude "*" \
+            --include "_astro/*" \
+            --cache-control "public, max-age=31536000, immutable"
+
+      # Sync everything else (HTML, sitemap, robots, favicons, etc.) with a
+      # revalidate header and --delete to remove stale files. _astro/ is
+      # excluded so this pass never deletes the immutable assets uploaded
+      # above (sync --delete only "sees" the filtered source view).
+      - name: Publish HTML and metadata (revalidate, reconcile)
+        run: |
+          aws s3 sync app/dist "s3://${{ steps.tf.outputs.bucket }}" \
+            --delete \
+            --exclude "_astro/*" \
+            --cache-control "public, max-age=0, must-revalidate"
+
+      # Separately reconcile the _astro/ prefix so orphaned assets from prior
+      # builds are pruned. Source and destination are both scoped to _astro/,
+      # so --delete only affects that prefix and headers stay immutable.
+      - name: Prune orphaned hashed assets
+        run: |
+          aws s3 sync app/dist/_astro "s3://${{ steps.tf.outputs.bucket }}/_astro" \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ steps.tf.outputs.distribution_id }}" \
+            --paths "/*" \
+            --no-cli-pager
+
+      - name: HTTPS smoke test
+        run: |
+          set -euo pipefail
+          url="https://frankidugboe.com/"
+          echo "Waiting for CloudFront to serve the updated site..."
+          for attempt in $(seq 1 10); do
+            status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "$url" || echo "000")"
+            echo "Attempt ${attempt}: HTTP ${status}"
+            if [ "$status" = "200" ]; then
+              echo "Verifying security headers and TLS..."
+              headers="$(curl -sSI --max-time 15 "$url")"
+              echo "$headers"
+              echo "$headers" | grep -iq '^strict-transport-security:' \
+                || { echo "Missing HSTS header"; exit 1; }
+              echo "Smoke test passed."
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "Smoke test failed: site did not return HTTP 200 in time."
+          exit 1
