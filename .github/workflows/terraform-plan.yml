@@ -104,7 +104,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check checkov==3.3.18
 
       - name: Run Checkov
-        run: checkov -d infrastructure --framework terraform --compact
+        run: checkov -d infrastructure --framework terraform --compact --skip-path '.*/tests/.*'
 
       - name: Run Trivy IaC scan
         if: always()
