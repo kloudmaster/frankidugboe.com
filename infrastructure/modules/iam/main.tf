@@ -1,5 +1,5 @@
 locals {
-  github_repository = "${var.github_repository_owner}/${var.github_repository_name}"
+  github_repository = "${var.github_repository_owner}@${var.github_repository_owner_id}/${var.github_repository_name}@${var.github_repository_id}"
   role_name_prefix  = replace(var.github_repository_name, ".", "-")
 
   github_plan_assume_role_policy = jsonencode({

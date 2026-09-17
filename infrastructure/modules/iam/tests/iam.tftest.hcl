@@ -1,8 +1,10 @@
 mock_provider "aws" {}
 
 variables {
-  github_repository_owner = "kloudmaster"
-  github_repository_name  = "frankidugboe.com"
+  github_repository_owner    = "kloudmaster"
+  github_repository_name     = "frankidugboe.com"
+  github_repository_owner_id = "185924774"
+  github_repository_id       = "1373130676"
 
   state_bucket_name           = "frankidugboe-com-terraform-state-216066926519"
   state_key                   = "production/terraform.tfstate"
@@ -45,7 +47,7 @@ run "restricts_github_role_trust" {
   assert {
     condition = strcontains(
       aws_iam_role.github_plan.assume_role_policy,
-      "repo:kloudmaster/frankidugboe.com:pull_request",
+      "repo:kloudmaster@185924774/frankidugboe.com@1373130676:pull_request",
     )
     error_message = "Plan role must trust only pull-request GitHub identities for this repository."
   }
@@ -53,7 +55,7 @@ run "restricts_github_role_trust" {
   assert {
     condition = strcontains(
       aws_iam_role.github_deploy.assume_role_policy,
-      "repo:kloudmaster/frankidugboe.com:environment:production",
+      "repo:kloudmaster@185924774/frankidugboe.com@1373130676:environment:production",
     )
     error_message = "Deploy role must trust the protected production GitHub Environment."
   }
@@ -61,7 +63,7 @@ run "restricts_github_role_trust" {
   assert {
     condition = !strcontains(
       aws_iam_role.github_deploy.assume_role_policy,
-      "repo:kloudmaster/frankidugboe.com:*",
+      "repo:kloudmaster@185924774/frankidugboe.com@1373130676:*",
     )
     error_message = "Deploy role trust must not allow every GitHub context in the repository."
   }

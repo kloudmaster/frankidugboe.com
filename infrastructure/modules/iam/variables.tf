@@ -8,6 +8,16 @@ variable "github_repository_name" {
   type        = string
 }
 
+variable "github_repository_owner_id" {
+  description = "Immutable GitHub repository owner ID used in OIDC subjects."
+  type        = string
+}
+
+variable "github_repository_id" {
+  description = "Immutable GitHub repository ID used in OIDC subjects."
+  type        = string
+}
+
 variable "state_bucket_name" {
   description = "S3 bucket containing the production Terraform state."
   type        = string

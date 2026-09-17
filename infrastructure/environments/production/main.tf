@@ -42,8 +42,10 @@ module "cloudfront" {
 module "iam" {
   source = "../../modules/iam"
 
-  github_repository_owner = "kloudmaster"
-  github_repository_name  = "frankidugboe.com"
+  github_repository_owner    = "kloudmaster"
+  github_repository_name     = "frankidugboe.com"
+  github_repository_owner_id = "185924774"
+  github_repository_id       = "1373130676"
 
   state_bucket_name = "frankidugboe-com-terraform-state-216066926519"
   state_key         = "production/terraform.tfstate"
