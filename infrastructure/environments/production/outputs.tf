@@ -7,3 +7,8 @@ output "route53_name_servers" {
   description = "Authoritative Route 53 name servers to configure at Porkbun."
   value       = module.route53.name_servers
 }
+
+output "acm_certificate_arn" {
+  description = "ARN of the validated ACM certificate for the portfolio domain."
+  value       = module.acm.certificate_arn
+}
