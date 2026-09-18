@@ -28,8 +28,8 @@ run "configures_contact_function" {
   }
 
   assert {
-    condition     = aws_lambda_function.this.reserved_concurrent_executions == 5
-    error_message = "Reserved concurrency must cap abuse blast radius."
+    condition     = aws_lambda_function.this.reserved_concurrent_executions == -1
+    error_message = "Reserved concurrency defaults to unreserved to respect the account concurrency floor."
   }
 
   assert {

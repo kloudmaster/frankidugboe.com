@@ -48,9 +48,9 @@ variable "memory_size" {
 }
 
 variable "reserved_concurrency" {
-  description = "Reserved concurrent executions to cap abuse blast radius."
+  description = "Reserved concurrent executions. -1 means unreserved (default); a positive value caps abuse blast radius but must respect the account's unreserved-concurrency floor."
   type        = number
-  default     = 5
+  default     = -1
 }
 
 variable "log_retention_days" {
