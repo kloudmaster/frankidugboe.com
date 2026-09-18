@@ -31,3 +31,6 @@ terraform.tfvars
 
 # Leaf-module lock files (only the root/production lock is tracked)
 infrastructure/modules/*/.terraform.lock.hcl
+
+# Lambda build artifacts (archive_file output)
+infrastructure/modules/lambda/build/
