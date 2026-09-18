@@ -15,6 +15,7 @@ variables {
   state_bucket_name           = "frankidugboe-com-terraform-state-216066926519"
   state_key                   = "production/terraform.tfstate"
   site_bucket_name            = "frankidugboe-com-origin-216066926519"
+  log_bucket_name             = "frankidugboe-com-logs-216066926519"
   cloudfront_distribution_arn = "arn:aws:cloudfront::216066926519:distribution/E1AN3BXJ4E5SB7"
   route53_zone_id             = "Z05203182KTV9HKTZIEXD"
   acm_certificate_arn         = "arn:aws:acm:us-east-1:216066926519:certificate/60ae8517-2dd1-4399-b0a2-2f883634cbfc"

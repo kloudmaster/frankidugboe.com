@@ -33,6 +33,12 @@ variable "site_bucket_name" {
   type        = string
 }
 
+variable "log_bucket_name" {
+  description = "Access-log destination bucket name (managed by the deploy role)."
+  type        = string
+  default     = ""
+}
+
 variable "cloudfront_distribution_arn" {
   description = "ARN of the portfolio CloudFront distribution."
   type        = string
