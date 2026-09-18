@@ -1,12 +1,18 @@
 locals {
   mail_from_domain = "mail.${var.domain_name}"
 
-  # Amazon SES Easy DKIM returns three signing tokens at apply time. Guard the
-  # computed lookup with try() so plan/validate and `terraform test` mocks
-  # (where the value is not yet known) do not error on an empty list.
-  dkim_tokens = try(
-    aws_sesv2_email_identity.domain.dkim_signing_attributes[0].tokens,
-    [],
+  # Amazon SES Easy DKIM always issues exactly three signing tokens. Using a
+  # static count keeps this plannable (the token values are unknown until
+  # apply, which count tolerates; for_each would reject unknown keys at plan).
+  dkim_token_count = 3
+
+  # The computed token list. Concatenate with placeholders so indexing 0..2 is
+  # always valid, including under `terraform test` mocks where the provider
+  # returns an empty list. In real plans/applies the actual tokens take
+  # precedence, so the placeholders are never used.
+  dkim_tokens = concat(
+    try(aws_sesv2_email_identity.domain.dkim_signing_attributes[0].tokens, []),
+    ["placeholder0", "placeholder1", "placeholder2"],
   )
 }
 
@@ -22,13 +28,13 @@ resource "aws_sesv2_email_identity" "domain" {
 # Publish one DKIM CNAME record per SES-issued token so the domain's mail is
 # signed and trusted.
 resource "aws_route53_record" "dkim" {
-  for_each = toset(local.dkim_tokens)
+  count = local.dkim_token_count
 
   zone_id = var.route53_zone_id
-  name    = "${each.value}._domainkey.${var.domain_name}"
+  name    = "${local.dkim_tokens[count.index]}._domainkey.${var.domain_name}"
   type    = "CNAME"
   ttl     = 1800
-  records = ["${each.value}.dkim.amazonses.com"]
+  records = ["${local.dkim_tokens[count.index]}.dkim.amazonses.com"]
 
   allow_overwrite = true
 }
