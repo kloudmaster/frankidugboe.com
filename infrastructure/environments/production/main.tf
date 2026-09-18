@@ -10,6 +10,7 @@ module "route53" {
 
   domain_name           = var.domain_name
   query_logging_enabled = true
+  dnssec_enabled        = true
 }
 
 module "acm" {

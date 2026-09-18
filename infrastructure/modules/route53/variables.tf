@@ -14,3 +14,9 @@ variable "query_log_retention_days" {
   type        = number
   default     = 30
 }
+
+variable "dnssec_enabled" {
+  description = "Enable DNSSEC signing for the hosted zone (KMS key + KSK). Requires a DS record at the registrar to complete."
+  type        = bool
+  default     = false
+}

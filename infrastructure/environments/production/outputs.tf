@@ -78,6 +78,11 @@ output "log_bucket_name" {
   value       = module.logging.bucket_name
 }
 
+output "dnssec_ds_record" {
+  description = "DS record to publish at the domain registrar (Porkbun) to complete DNSSEC."
+  value       = module.route53.dnssec_ds_record
+}
+
 output "alerts_sns_topic_arn" {
   description = "ARN of the budget/alarm alerts SNS topic."
   value       = module.budget.sns_topic_arn

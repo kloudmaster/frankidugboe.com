@@ -93,6 +93,30 @@ The sending domain's DKIM, SPF and custom MAIL FROM records are provisioned by
 the `ses` Terraform module; DKIM verification can take time to propagate after
 the first apply.
 
+## DNSSEC (post-launch)
+
+Terraform provisions Route 53 DNSSEC signing (KMS signing key + key-signing key
++ zone signing). Completing the chain of trust requires **one manual step at the
+registrar** — Terraform cannot set records at Porkbun.
+
+After the deploy that enables DNSSEC:
+
+1. Read the DS record Terraform exposes:
+   ```bash
+   terraform -chdir=infrastructure/environments/production output dnssec_ds_record
+   ```
+   (The AWS console also shows it under Route 53 -> Hosted zones ->
+   frankidugboe.com -> DNSSEC signing.)
+2. In the Porkbun dashboard for frankidugboe.com, open the **DNSSEC** section and
+   add a DS record using the values from that output (key tag, algorithm, digest
+   type, and digest).
+3. Allow time for propagation, then verify the chain of trust, e.g. with
+   `dig +dnssec frankidugboe.com` or an online DNSSEC analyzer.
+
+Do not enable DNSSEC at the registrar before the KSK is active in Route 53, and
+do not remove the DS record while zone signing is enabled — a mismatch can make
+the domain unresolvable for validating resolvers.
+
 ## Notes and design decisions
 
 - **No invalidation wait**: the deploy role intentionally does not include

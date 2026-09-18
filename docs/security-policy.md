@@ -30,6 +30,7 @@ with an inline comment pointing back to this document.
 | WAF logging (Phase F, `CKV2_AWS_31`) | WAF Web ACL | `aws_wafv2_web_acl_logging_configuration` to an `aws-waf-logs-*` CloudWatch log group. |
 | S3 origin access logging (Phase F, part of `CKV_AWS_18`) | origin bucket | `aws_s3_bucket_logging` to the dedicated log bucket. |
 | Budget + alarms (Phase F) | account, contact Lambda | Monthly cost `aws_budgets_budget` with 80% actual + 100% forecasted email alerts, plus a Lambda-errors CloudWatch alarm, both via an (AWS-managed-KMS-encrypted) SNS topic. |
+| DNSSEC signing (post-launch, `CKV2_AWS_38`) | hosted zone | Asymmetric KMS signing key (ECC_NIST_P256) + key-signing key + `aws_route53_hosted_zone_dnssec`. Requires a one-time DS record at the registrar (Porkbun) to complete the chain of trust. |
 
 ## Waived
 
@@ -119,13 +120,19 @@ new checks. Classifications:
 
 ## Review cadence
 
-Deferred items should be revisited at their named phase:
+All planned phases (A–G) are implemented. The remaining scanner entries are
+permanent waivers — false positives, not-applicable controls, or accepted
+risk — not deferrals:
 
-1. **Post-launch**: remove `CKV2_AWS_38` and implement DNSSEC.
+- The DNSSEC KMS key policy carries scoped inline skips for `CKV_AWS_109`,
+  `CKV_AWS_111` and `CKV_AWS_356`. These flag the AWS-required root-account
+  statement in every KMS key policy, which must not be removed (it prevents
+  locking yourself out of the key). The skips are inline on that single data
+  source, so the checks remain active everywhere else.
 
-Phases E (contact backend + WAF) and F (observability, logging, budget) are
-implemented; their remaining entries above are permanent waivers (false
-positives, not-applicable, or accepted risk), not deferrals.
+Waivers should be re-confirmed whenever the architecture materially changes
+(for example, if the origin ever stores non-public or sensitive data, revisit
+the KMS/SSE-S3 decisions).
 
 Accepted-risk and not-applicable waivers should be re-confirmed whenever the
 architecture materially changes (for example, if the origin ever stores
