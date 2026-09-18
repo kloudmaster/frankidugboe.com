@@ -1,0 +1,271 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { navItems } from '../../data/navigation';
+
+const title = 'Production AWS Portfolio Platform | Frank Osasere Idugboe';
+
+const technologies = [
+  'AWS',
+  'Terraform',
+  'GitHub Actions',
+  'OIDC',
+  'CloudFront',
+  'S3',
+  'WAF',
+  'API Gateway',
+  'Lambda',
+  'SES',
+  'Route 53',
+  'DNSSEC',
+  'ACM',
+  'CloudWatch',
+  'Astro',
+];
+---
+
+<BaseLayout
+  title={title}
+  description="How frankidugboe.com is built and operated: a static Astro site on private S3 and CloudFront, a serverless contact backend, WAF, observability, DNSSEC, and a fully automated Terraform + GitHub Actions (OIDC) delivery pipeline."
+>
+  <SiteHeader navItems={navItems} />
+
+  <main>
+    <section class="bg-slate-950 py-20 text-white">
+      <div class="reveal mx-auto max-w-5xl px-6 lg:px-8">
+        <a href="/projects" class="text-sm font-semibold text-sky-400 hover:text-sky-300">
+          ← Back to Projects
+        </a>
+
+        <p class="mt-10 text-sm font-semibold uppercase tracking-[0.2em] text-sky-400">
+          Platform Engineering · Cloud &amp; DevOps
+        </p>
+
+        <h1 class="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
+          Production AWS Portfolio Platform
+        </h1>
+
+        <p class="mt-6 max-w-3xl text-lg leading-8 text-slate-300">
+          This website is itself an engineering project. It runs on AWS as a
+          secure static site with a serverless contact backend, defined entirely
+          in Terraform and deployed automatically through GitHub Actions using
+          short-lived OIDC credentials — no stored AWS keys.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-2">
+          {
+            technologies.map((technology) => (
+              <span class="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-300">
+                {technology}
+              </span>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white py-20">
+      <div class="mx-auto max-w-4xl space-y-16 px-6 lg:px-8">
+        <section class="reveal">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Goal
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            A portfolio that proves the skills it describes.
+          </h2>
+          <p class="mt-5 leading-8 text-slate-600">
+            The objective was not simply to publish a website, but to run it the
+            way production infrastructure should be run: reproducible from code,
+            secured by default, observable, automatically deployed, and free of
+            long-lived credentials. The site therefore doubles as a working
+            reference for the cloud and DevOps practices described across the
+            rest of this portfolio.
+          </p>
+        </section>
+
+        <section class="reveal">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Architecture
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            Static delivery, a serverless API, and a single edge.
+          </h2>
+          <p class="mt-5 leading-8 text-slate-600">
+            Visitors are served through CloudFront over HTTPS. The static site
+            lives in a private S3 bucket reachable only through CloudFront via
+            Origin Access Control. The same distribution routes
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-sm text-slate-800">/api/*</code>
+            to the contact backend, so the whole site sits behind one WAF and
+            one certificate.
+          </p>
+
+          <div class="mt-6 rounded-2xl bg-slate-950 p-7 font-mono text-sm leading-7 text-slate-300">
+            <p>Internet</p>
+            <p class="pl-4">↓</p>
+            <p>Route 53 (DNSSEC signed)</p>
+            <p class="pl-4">↓</p>
+            <p>CloudFront + ACM TLS + WAF + Security Headers</p>
+            <p class="pl-4">↓ ┌───────────────┐</p>
+            <p>Static site ← private S3 (OAC / SigV4)</p>
+            <p>/api/* → API Gateway → Lambda → SES → private inbox</p>
+          </div>
+        </section>
+
+        <section class="reveal">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Delivery
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            Everything ships through an automated, credential-free pipeline.
+          </h2>
+          <p class="mt-5 leading-8 text-slate-600">
+            All infrastructure is defined in modular Terraform with remote state
+            in S3 using native state locking. GitHub Actions authenticates to AWS
+            through OpenID Connect, assuming short-lived roles — a read-only role
+            for pull-request plans and a separate deploy role scoped to the
+            production environment. There are no static AWS access keys.
+          </p>
+          <div class="mt-6 rounded-2xl bg-slate-950 p-7 font-mono text-sm leading-7 text-slate-300">
+            <p>Pull request</p>
+            <p class="pl-4">↓ terraform fmt · module &amp; composition tests · validate</p>
+            <p class="pl-4">↓ plan (OIDC) · TFLint · Checkov · Trivy</p>
+            <p>Merge to main</p>
+            <p class="pl-4">↓ production environment (manual approval)</p>
+            <p class="pl-4">↓ terraform apply (OIDC)</p>
+            <p class="pl-4">↓ Astro build → S3 sync → CloudFront invalidation</p>
+            <p class="pl-4">↓ HTTPS + contact-API smoke test</p>
+          </div>
+          <p class="mt-5 leading-8 text-slate-600">
+            The deploy role holds no IAM self-modification permissions; the
+            Lambda execution role and OIDC roles are provisioned separately in a
+            security plane. UI-only changes skip the Terraform apply step to
+            avoid unnecessary control-plane activity.
+          </p>
+        </section>
+
+        <section class="reveal">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Security
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            Secure by default at every layer.
+          </h2>
+          <div class="mt-5 space-y-4 leading-8 text-slate-600">
+            <p>
+              The S3 origin blocks all public access and is reachable only
+              through CloudFront. TLS is enforced (1.2+), with AWS-managed
+              security response headers including HSTS.
+            </p>
+            <p>
+              A CloudFront-scoped WAF applies the AWS managed common rule set,
+              the Known Bad Inputs set (covering Log4j), and an IP rate-based
+              rule in front of both the site and the contact API.
+            </p>
+            <p>
+              The contact Lambda validates input, uses a honeypot field to drop
+              bots, applies rate limiting, and sends through SES from a verified
+              domain identity — the destination inbox is never exposed publicly.
+            </p>
+            <p>
+              DNS is signed with DNSSEC (a KMS-backed key-signing key), and the
+              delegation-signer record is published at the registrar, so the
+              chain of trust validates end to end.
+            </p>
+            <p>
+              Infrastructure-as-code security scanning (TFLint, Checkov, Trivy)
+              runs on every change, and each finding is classified as
+              implemented, accepted risk, or documented false positive in a
+              written security policy.
+            </p>
+          </div>
+        </section>
+
+        <section class="reveal">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Observability
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            Logs, alarms, and a cost guardrail.
+          </h2>
+          <p class="mt-5 leading-8 text-slate-600">
+            CloudFront access logs, S3 server access logs, WAF logs, and Route 53
+            query logs are delivered to a governed, private log destination. A
+            CloudWatch alarm watches the contact Lambda for errors, notifications
+            are delivered through SNS, and a monthly AWS Budget provides an
+            early cost-overrun signal.
+          </p>
+        </section>
+
+        <section class="reveal">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Results
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            A reproducible, self-operating site.
+          </h2>
+          <div class="mt-5 space-y-4 leading-8 text-slate-600">
+            <p>
+              The entire platform is reproducible from code and deploys on merge
+              with a single manual approval gate. Frontend quality checks,
+              Terraform validation and tests, and IaC security scans are required
+              before any change reaches production.
+            </p>
+            <p>
+              Each deploy verifies itself: the pipeline confirms the homepage
+              returns HTTP 200 with the expected security headers and that the
+              contact API correctly rejects invalid input — without sending a
+              real email.
+            </p>
+          </div>
+        </section>
+
+        <section class="reveal">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Lessons
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            Small platform decisions compound.
+          </h2>
+          <div class="mt-5 space-y-4 leading-8 text-slate-600">
+            <p>
+              OIDC federation removes an entire class of credential-management
+              risk compared with stored access keys.
+            </p>
+            <p>
+              Keeping IAM changes out of the deploy role's permissions preserves
+              a clear separation between the delivery pipeline and the security
+              plane.
+            </p>
+            <p>
+              Security scanners are most useful when their findings are decided
+              deliberately and documented, rather than chased blindly toward a
+              green badge.
+            </p>
+            <p>
+              Treating routing, caching, and per-object cache headers explicitly
+              keeps a static site both fast and always up to date after deploys.
+            </p>
+          </div>
+        </section>
+
+        <section class="reveal">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Technologies
+          </p>
+          <div class="mt-5 flex flex-wrap gap-2">
+            {
+              technologies.map((technology) => (
+                <span class="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700">
+                  {technology}
+                </span>
+              ))
+            }
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+</BaseLayout>

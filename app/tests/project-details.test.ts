@@ -45,7 +45,33 @@ const projects = [
       'Lessons',
     ],
   },
+  {
+    name: 'Production AWS Portfolio Platform',
+    file: 'src/pages/projects/portfolio-platform.astro',
+    expectations: [
+      'Production AWS Portfolio Platform',
+      'Terraform',
+      'OIDC',
+      'CloudFront',
+      'DNSSEC',
+      'Architecture',
+      'Delivery',
+      'Security',
+      'Observability',
+      'Results',
+      'Lessons',
+    ],
+  },
 ];
+
+const listing = readFileSync(
+  resolve(process.cwd(), 'src/pages/projects/index.astro'),
+  'utf8',
+);
+const homepage = readFileSync(
+  resolve(process.cwd(), 'src/pages/index.astro'),
+  'utf8',
+);
 
 describe('project case-study pages', () => {
   for (const project of projects) {
@@ -68,4 +94,9 @@ describe('project case-study pages', () => {
       }
     });
   }
+
+  test('links the portfolio platform case study from the listing and homepage', () => {
+    expect(listing).toContain('/projects/portfolio-platform');
+    expect(homepage).toContain('/projects/portfolio-platform');
+  });
 });
