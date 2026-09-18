@@ -17,3 +17,10 @@ AWS-0011
 # so a customer-managed KMS key adds key-management cost and complexity for
 # no meaningful risk reduction here. Mirrors Checkov CKV_AWS_145.
 AWS-0132
+
+# AWS-0136 (HIGH): SNS topic encryption does not use a customer managed key.
+# Accepted risk. The alerts topic carries only budget and CloudWatch alarm
+# notifications (no sensitive data) and is encrypted with the AWS-managed SNS
+# key. A customer-managed key adds cost/complexity for no meaningful gain here,
+# consistent with the SSE-S3 decision (AWS-0132 / CKV_AWS_145).
+AWS-0136
