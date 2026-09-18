@@ -292,6 +292,35 @@ locals {
         ]
       },
       {
+        Sid    = "Route53DnssecRead"
+        Effect = "Allow"
+
+        Action = [
+          "route53:GetDNSSEC",
+        ]
+
+        Resource = [
+          "*",
+        ]
+      },
+      {
+        Sid    = "DnssecKmsRead"
+        Effect = "Allow"
+
+        Action = [
+          "kms:DescribeKey",
+          "kms:GetKeyPolicy",
+          "kms:GetKeyRotationStatus",
+          "kms:GetPublicKey",
+          "kms:ListAliases",
+          "kms:ListResourceTags",
+        ]
+
+        Resource = [
+          "*",
+        ]
+      },
+      {
         Sid    = "AcmRead"
         Effect = "Allow"
 
@@ -560,6 +589,51 @@ locals {
           "route53:ChangeTagsForResource",
           "route53:CreateHostedZone",
           "route53:DeleteHostedZone",
+        ]
+
+        Resource = [
+          "*",
+        ]
+      },
+      {
+        Sid    = "Route53DnssecManagement"
+        Effect = "Allow"
+
+        Action = [
+          "route53:ActivateKeySigningKey",
+          "route53:CreateKeySigningKey",
+          "route53:DeactivateKeySigningKey",
+          "route53:DeleteKeySigningKey",
+          "route53:DisableHostedZoneDNSSEC",
+          "route53:EnableHostedZoneDNSSEC",
+          "route53:GetDNSSEC",
+        ]
+
+        Resource = [
+          "*",
+        ]
+      },
+      {
+        Sid    = "DnssecKmsManagement"
+        Effect = "Allow"
+
+        Action = [
+          "kms:CreateAlias",
+          "kms:CreateKey",
+          "kms:DeleteAlias",
+          "kms:DescribeKey",
+          "kms:DisableKey",
+          "kms:EnableKey",
+          "kms:GetKeyPolicy",
+          "kms:GetKeyRotationStatus",
+          "kms:GetPublicKey",
+          "kms:ListAliases",
+          "kms:ListResourceTags",
+          "kms:PutKeyPolicy",
+          "kms:ScheduleKeyDeletion",
+          "kms:Sign",
+          "kms:TagResource",
+          "kms:UntagResource",
         ]
 
         Resource = [
