@@ -67,11 +67,6 @@ skip-check:
   # buckets keep BucketOwnerEnforced. Public access is still fully blocked.
   - CKV2_AWS_65
 
-  # --- Deferred: DNSSEC ------------------------------------------------------
-  # CKV2_AWS_38: Route 53 DNSSEC signing. Real hardening but moderate effort
-  # (KMS key + KSK + parent DS record at the registrar). Scheduled post-launch.
-  - CKV2_AWS_38
-
   # ==========================================================================
   # Contact backend (Phase E): API Gateway -> Lambda -> SES, WAF on CloudFront
   # ==========================================================================
