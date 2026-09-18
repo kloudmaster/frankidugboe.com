@@ -17,8 +17,11 @@ body {
 }
 
 /* Subtle entrance animation, applied to elements marked with .reveal.
-   Elements start slightly lowered and transparent, then ease into place. */
-.reveal {
+   Progressive enhancement: content is visible by default. Only when
+   JavaScript is available (the <html> element gets a `js` class before
+   paint) are elements hidden and then eased into view. This guarantees
+   content is never stuck invisible if JavaScript fails or is disabled. */
+.js .reveal {
   opacity: 0;
   transform: translateY(16px);
   transition:
@@ -27,7 +30,7 @@ body {
   will-change: opacity, transform;
 }
 
-.reveal.is-visible {
+.js .reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
 }
@@ -76,7 +79,7 @@ body {
     scroll-behavior: auto;
   }
 
-  .reveal {
+  .js .reveal {
     opacity: 1;
     transform: none;
     transition: none;

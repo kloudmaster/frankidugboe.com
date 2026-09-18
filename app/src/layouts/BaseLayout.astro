@@ -4,11 +4,13 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
 }
 
 const {
   title = 'Frank Osasere Idugboe | Cloud & DevOps Engineer',
   description = 'Frank Osasere Idugboe — Cloud & DevOps Engineer, AWS Community Builder, and Digital Forensics Researcher.',
+  image = '/images/frank-idugboe.png',
 } = Astro.props;
 
 const siteURL = 'https://frankidugboe.com';
@@ -16,6 +18,8 @@ const canonicalURL = new URL(
   Astro.url.pathname,
   Astro.site ?? siteURL,
 ).toString();
+
+const ogImageURL = new URL(image, Astro.site ?? siteURL).toString();
 
 const personSchema = {
   "@type": "Person",
@@ -34,6 +38,7 @@ const personSchema = {
   },
   "sameAs": [
     "https://github.com/kloudmaster",
+    "https://www.linkedin.com/in/kloudmaster/",
   ],
   "knowsAbout": [
     "AWS",
@@ -103,6 +108,13 @@ const structuredData = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
 
+    <!-- Mark that JavaScript is available before first paint. The reveal
+         animations only hide content when this class is present, so content
+         stays visible if JavaScript is disabled or fails to load. -->
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#020617" />
@@ -115,10 +127,13 @@ const structuredData = {
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Frank Osasere Idugboe" />
     <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:alt" content="Frank Osasere Idugboe — Cloud & DevOps Engineer" />
 
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
 
     <script
       type="application/ld+json"

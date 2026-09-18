@@ -1,0 +1,58 @@
+name: Refresh GitHub Contribution Graph
+
+# Fetches the GitHub contribution graph on a schedule and commits it into the
+# repo so the site can serve it from its own origin (CloudFront) instead of
+# calling a third-party service at runtime. Removes the runtime dependency and
+# the privacy concern of every visitor contacting an external host.
+on:
+  schedule:
+    - cron: "17 5 * * 1" # weekly, Monday 05:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    name: Refresh contribution graph
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Fetch latest contribution graph
+        run: |
+          set -euo pipefail
+          out="app/public/images/github-contributions.svg"
+          tmp="$(mktemp)"
+          # Retry a few times; the source is a community service.
+          for attempt in 1 2 3; do
+            if curl -sSL --fail --max-time 30 \
+              "https://ghchart.rshah.org/2f81f6/kloudmaster" -o "$tmp"; then
+              break
+            fi
+            echo "Attempt ${attempt} failed; retrying..."
+            sleep 10
+          done
+          # Only replace if we fetched a non-empty SVG.
+          if [ -s "$tmp" ] && head -c 64 "$tmp" | grep -qi "svg"; then
+            mv "$tmp" "$out"
+            echo "Updated $out"
+          else
+            echo "Fetch failed or invalid; keeping the existing committed graph."
+            rm -f "$tmp"
+          fi
+
+      - name: Commit changes if the graph changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- app/public/images/github-contributions.svg; then
+            echo "No change in the contribution graph."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/public/images/github-contributions.svg
+          git commit -m "chore: refresh GitHub contribution graph"
+          git push

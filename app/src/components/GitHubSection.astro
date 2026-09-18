@@ -9,10 +9,11 @@ const {
   username = 'kloudmaster',
 } = Astro.props;
 
-// Live contribution graph rendered by the community service ghchart.
-// If it fails to load, a decorative CSS grid is shown instead so the
-// section never looks broken.
-const chartSrc = `https://ghchart.rshah.org/2f81f6/${username}`;
+// Self-hosted contribution graph served from our own origin (CloudFront).
+// A scheduled GitHub Action (refresh-github-graph.yml) refreshes the committed
+// SVG, so there is no third-party call at runtime. A CSS grid is shown as a
+// fallback if the image is unavailable.
+const chartSrc = '/images/github-contributions.svg';
 
 const cells = Array.from({ length: 84 }, (_, i) => (i * 7 + (i % 5) * 3) % 5);
 const levelClass = [
