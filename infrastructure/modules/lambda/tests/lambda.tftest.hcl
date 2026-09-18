@@ -13,8 +13,8 @@ run "configures_contact_function" {
   }
 
   assert {
-    condition     = aws_lambda_function.this.runtime == "nodejs20.x"
-    error_message = "The function must use the nodejs20.x runtime."
+    condition     = aws_lambda_function.this.runtime == "nodejs22.x"
+    error_message = "The function must use the nodejs22.x runtime."
   }
 
   assert {

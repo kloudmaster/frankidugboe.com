@@ -67,6 +67,8 @@ jobs:
 
       - name: Terraform plan
         if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          TF_VAR_ses_recipient: ${{ secrets.SES_RECIPIENT }}
         run: |
           terraform -chdir=infrastructure/environments/production \
             plan -input=false -no-color -lock-timeout=5m

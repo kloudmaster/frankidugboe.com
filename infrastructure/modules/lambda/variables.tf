@@ -16,7 +16,7 @@ variable "execution_role_arn" {
 variable "runtime" {
   description = "Lambda runtime. Node.js 20+ includes AWS SDK v3 at runtime."
   type        = string
-  default     = "nodejs20.x"
+  default     = "nodejs22.x"
 }
 
 variable "ses_sender" {
