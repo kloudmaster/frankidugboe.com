@@ -1,0 +1,19 @@
+# Trivy ignore policy for frankidugboe.com
+#
+# Auto-loaded by `trivy config` from the repo root (CI working directory).
+# Each suppression is a deliberate decision documented in
+# docs/security-policy.md and mirrored in .checkov.yaml.
+
+# AWS-0011 (HIGH): CloudFront distribution does not have a WAF in front.
+# False positive under static analysis. The distribution DOES attach a WAFv2
+# Web ACL (module.waf -> cloudfront web_acl_id). Because the association is a
+# cross-module variable reference rather than a literal, Trivy cannot resolve
+# it statically. Mirrors Checkov CKV_AWS_68.
+AWS-0011
+
+# AWS-0132 (HIGH): S3 encryption should use Customer Managed Keys.
+# Accepted risk. Both buckets use SSE-S3 (AES256). The origin bucket holds
+# only public static assets and the Terraform state bucket holds no secrets,
+# so a customer-managed KMS key adds key-management cost and complexity for
+# no meaningful risk reduction here. Mirrors Checkov CKV_AWS_145.
+AWS-0132

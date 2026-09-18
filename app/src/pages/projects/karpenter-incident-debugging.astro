@@ -1,0 +1,268 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { navItems } from '../../data/navigation';
+
+const title =
+  'Kubernetes / Karpenter Incident Debugging | Frank Osasere Idugboe';
+
+const technologies = [
+  'Kubernetes',
+  'Karpenter',
+  'AWS IAM',
+  'EBS',
+  'EKS',
+  'EC2',
+  'kubectl',
+  'CloudWatch',
+];
+---
+
+<BaseLayout
+  title={title}
+  description="A Kubernetes and Karpenter troubleshooting case study covering resource requests, AWS IAM trust, and EBS Availability Zone affinity."
+>
+  <SiteHeader navItems={navItems} />
+
+  <main>
+    <section class="bg-slate-950 py-20 text-white">
+      <div class="mx-auto max-w-5xl px-6 lg:px-8">
+        <a
+          href="/projects"
+          class="text-sm font-semibold text-sky-400 hover:text-sky-300"
+        >
+          ← Back to Projects
+        </a>
+
+        <p class="mt-10 text-sm font-semibold uppercase tracking-[0.2em] text-sky-400">
+          Incident Engineering · Kubernetes
+        </p>
+
+        <h1 class="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
+          Kubernetes / Karpenter Incident Debugging
+        </h1>
+
+        <p class="mt-6 max-w-3xl text-lg leading-8 text-slate-300">
+          A troubleshooting case study showing how apparently separate
+          Kubernetes scheduling, Karpenter identity, AWS IAM, and EBS storage
+          constraints formed one failure chain.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-2">
+          {
+            technologies.map((technology) => (
+              <span class="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-300">
+                {technology}
+              </span>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white py-20">
+      <div class="mx-auto max-w-4xl space-y-16 px-6 lg:px-8">
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Problem
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            Pods remained pending even though the cluster appeared to have spare capacity.
+          </h2>
+          <p class="mt-5 leading-8 text-slate-600">
+            The investigation began with Kubernetes workloads that would not
+            schedule as expected. Cluster CPU utilization alone did not explain
+            the failure because Kubernetes scheduling decisions depend on
+            resource requests, placement constraints, storage topology, and
+            whether the node-provisioning controller can operate successfully.
+          </p>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Context
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            The symptom crossed multiple infrastructure layers.
+          </h2>
+          <p class="mt-5 leading-8 text-slate-600">
+            The workload depended on Kubernetes scheduling, Karpenter for
+            dynamic node provisioning, AWS IAM for controller authorization,
+            and EBS volumes bound to specific Availability Zones. Each layer
+            looked reasonable when examined independently, which made the
+            failure chain less obvious.
+          </p>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Architecture
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            Kubernetes scheduling connected directly to AWS infrastructure.
+          </h2>
+          <div class="mt-6 rounded-2xl bg-slate-950 p-7 font-mono text-sm leading-7 text-slate-300">
+            <p>Pending Pod</p>
+            <p class="pl-4">↓</p>
+            <p>Kubernetes Scheduler</p>
+            <p class="pl-4">↓</p>
+            <p>Karpenter Controller</p>
+            <p class="pl-4">↓ AssumeRoleWithWebIdentity</p>
+            <p>AWS IAM Role</p>
+            <p class="pl-4">↓</p>
+            <p>EC2 Node Provisioning</p>
+            <p class="pl-4">↓</p>
+            <p>EBS / Availability Zone Constraints</p>
+          </div>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Investigation
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            Debugging followed the dependency chain instead of focusing on CPU utilization.
+          </h2>
+
+          <div class="mt-6 space-y-6 text-slate-600">
+            <p class="leading-8">
+              The first step was to inspect pod scheduling conditions and
+              compare actual node capacity with Kubernetes resource requests.
+              This separated physical utilization from the scheduler's view of
+              allocatable capacity.
+            </p>
+
+            <p class="leading-8">
+              The investigation then moved into Karpenter. Controller logs
+              exposed a failure during
+              <code class="rounded bg-slate-100 px-1.5 py-0.5 text-sm text-slate-800">
+                AssumeRoleWithWebIdentity
+              </code>,
+              which shifted the investigation from Kubernetes into AWS IAM.
+            </p>
+
+            <p class="leading-8">
+              The Karpenter Kubernetes service account identity did not match
+              the namespace expected by the IAM role trust relationship. The
+              controller and IAM configuration were individually plausible,
+              but the identity values had drifted apart.
+            </p>
+
+            <p class="leading-8">
+              After aligning the IAM trust relationship with the service
+              account actually used by the Karpenter controller, the controller
+              could assume its role and resume instance-type discovery and
+              provisioning activity.
+            </p>
+
+            <p class="leading-8">
+              Storage placement was also examined. EBS volumes are tied to an
+              Availability Zone, so node placement must remain compatible with
+              the volume topology required by the workload.
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Security
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            IAM trust was treated as part of the application runtime path.
+          </h2>
+          <p class="mt-5 leading-8 text-slate-600">
+            Workload identity depends on an exact relationship between the
+            Kubernetes service account and the AWS IAM trust policy. The fix
+            was not to broaden permissions unnecessarily, but to correct the
+            specific identity relationship required by the controller.
+          </p>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Observability
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            Scheduler events and controller logs were essential evidence.
+          </h2>
+          <p class="mt-5 leading-8 text-slate-600">
+            Kubernetes events, pod status, Karpenter controller logs, resource
+            requests, node information, and AWS-side identity behavior provided
+            the evidence needed to move from symptom to root cause.
+          </p>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Results
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            The controller returned to a healthy provisioning path.
+          </h2>
+          <p class="mt-5 leading-8 text-slate-600">
+            Once Kubernetes identity and AWS IAM trust were aligned, Karpenter
+            could operate normally again. The investigation also established
+            EBS Availability Zone affinity as an important constraint to
+            consider when diagnosing similar scheduling failures.
+          </p>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Lessons
+          </p>
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            Low utilization does not mean Kubernetes has usable scheduling capacity.
+          </h2>
+          <div class="mt-5 space-y-4 leading-8 text-slate-600">
+            <p>
+              Resource requests, not only live CPU usage, influence scheduling
+              decisions.
+            </p>
+            <p>
+              Kubernetes workload identity and AWS IAM trust must be debugged
+              as one system.
+            </p>
+            <p>
+              Persistent storage topology can constrain where replacement nodes
+              are useful.
+            </p>
+            <p>
+              Following the dependency chain is often faster than treating each
+              infrastructure layer as an isolated subsystem.
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Related article
+          </p>
+          <a
+            href="https://dev.to/aws-builders/kubernetes-at-3-cpu-but-pods-still-pending-debugging-requests-karpenter-and-ebs-az-affinity-17jh"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-4 inline-flex font-semibold text-sky-700 hover:text-sky-600"
+          >
+            Read the published technical walkthrough →
+          </a>
+        </section>
+
+        <section>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Technologies
+          </p>
+          <div class="mt-5 flex flex-wrap gap-2">
+            {
+              technologies.map((technology) => (
+                <span class="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700">
+                  {technology}
+                </span>
+              ))
+            }
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

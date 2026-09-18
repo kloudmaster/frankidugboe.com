@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import { navItems } from '../data/navigation';
+
+const title = 'Page not found | Frank Osasere Idugboe';
+---
+
+<BaseLayout
+  title={title}
+  description="The requested page could not be found on Frank Osasere Idugboe's professional portfolio."
+>
+  <SiteHeader navItems={navItems} />
+
+  <main class="bg-white">
+    <section class="mx-auto flex min-h-[70vh] max-w-7xl items-center px-6 py-24 lg:px-8">
+      <div class="max-w-2xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+          404
+        </p>
+
+        <h1 class="mt-4 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
+          Page not found
+        </h1>
+
+        <p class="mt-6 text-lg leading-8 text-slate-600">
+          The page you requested does not exist or may have moved.
+        </p>
+
+        <a
+          href="/"
+          class="mt-8 inline-flex rounded-lg bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+        >
+          Return to homepage
+        </a>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

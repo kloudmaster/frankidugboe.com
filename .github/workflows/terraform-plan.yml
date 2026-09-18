@@ -1,0 +1,121 @@
+name: Terraform PR Plan
+
+on:
+  pull_request:
+    paths:
+      - "infrastructure/**"
+      - ".terraform-version"
+      - ".github/workflows/terraform-plan.yml"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  terraform:
+    name: Terraform validate and plan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.16.3
+          terraform_wrapper: false
+
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive infrastructure
+
+      - name: Initialize IAM module
+        run: terraform -chdir=infrastructure/modules/iam init -backend=false -input=false
+
+      - name: Test IAM module
+        run: terraform -chdir=infrastructure/modules/iam test
+
+      - name: Initialize production configuration for tests
+        run: terraform -chdir=infrastructure/environments/production init -backend=false -input=false
+
+      - name: Test production IAM composition
+        run: |
+          terraform -chdir=infrastructure/environments/production test \
+            -filter=tests/iam.tftest.hcl
+
+      - name: Test production DNS composition
+        run: |
+          terraform -chdir=infrastructure/environments/production test \
+            -filter=tests/dns.tftest.hcl
+
+      - name: Validate production configuration
+        run: terraform -chdir=infrastructure/environments/production validate
+
+      - name: Configure AWS credentials with GitHub OIDC
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::216066926519:role/frankidugboe-com-github-plan
+          aws-region: us-east-1
+          role-session-name: github-terraform-plan
+
+      - name: Initialize production backend
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          terraform -chdir=infrastructure/environments/production \
+            init -reconfigure -input=false
+
+      - name: Terraform plan
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          TF_VAR_ses_recipient: ${{ secrets.SES_RECIPIENT }}
+        run: |
+          terraform -chdir=infrastructure/environments/production \
+            plan -input=false -no-color -lock-timeout=5m
+
+  security:
+    name: IaC security checks
+    runs-on: ubuntu-latest
+
+    # Deliberately no id-token permission here.
+    # Security scanners do not need AWS credentials.
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up TFLint
+        uses: terraform-linters/setup-tflint@v6.3.1
+        with:
+          tflint_version: v0.64.0
+
+      - name: Initialize TFLint plugins
+        run: tflint --init --config=.tflint.hcl
+
+      - name: Run TFLint
+        run: tflint --recursive --config="$(pwd)/.tflint.hcl" --format=compact
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Install Checkov
+        run: python -m pip install --disable-pip-version-check checkov==3.3.18
+
+      - name: Run Checkov
+        run: checkov -d infrastructure --framework terraform --compact --skip-path '(^|.*/)tests(/.*)?$'
+
+      - name: Run Trivy IaC scan
+        if: always()
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: config
+          scan-ref: infrastructure
+          format: table
+          exit-code: "1"
+          severity: HIGH,CRITICAL
+          version: v0.74.0
+          hide-progress: true

@@ -8,6 +8,10 @@ dist/
 .env.*
 !.env.example
 
+# direnv
+.envrc
+.direnv/
+
 # Terraform
 .terraform/
 *.tfstate
@@ -24,3 +28,6 @@ terraform.tfvars
 # IDE
 .vscode/
 .idea/
+
+# Leaf-module lock files (only the root/production lock is tracked)
+infrastructure/modules/*/.terraform.lock.hcl

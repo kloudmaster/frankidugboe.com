@@ -1,0 +1,72 @@
+---
+interface Project {
+  title: string;
+  category: string;
+  description: string;
+  href: string;
+  tags: string[];
+}
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<section id="featured-projects" class="bg-slate-950 py-24 text-white">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="max-w-3xl">
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-sky-400">
+        Selected engineering work
+      </p>
+
+      <h2 class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+        Featured DevOps Projects
+      </h2>
+
+      <p class="mt-5 text-lg leading-8 text-slate-400">
+        Production-oriented case studies covering Kubernetes troubleshooting,
+        cloud security automation, and event-driven infrastructure.
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-6 lg:grid-cols-3">
+      {
+        projects.map((project) => (
+          <article class="flex flex-col rounded-2xl border border-slate-800 bg-slate-900/70 p-7">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-400">
+              {project.category}
+            </p>
+
+            <h3 class="mt-4 text-xl font-bold leading-7">
+              {project.title}
+            </h3>
+
+            <p class="mt-4 flex-1 leading-7 text-slate-400">
+              {project.description}
+            </p>
+
+            <div class="mt-6 flex flex-wrap gap-2">
+              {
+                project.tags.map((tag) => (
+                  <span class="rounded-full border border-slate-700 px-3 py-1 text-xs font-medium text-slate-300">
+                    {tag}
+                  </span>
+                ))
+              }
+            </div>
+
+            <a
+              href={project.href}
+              class="mt-7 inline-flex items-center font-semibold text-sky-400 transition hover:text-sky-300"
+            >
+              View case study
+              <span aria-hidden="true" class="ml-2">→</span>
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
