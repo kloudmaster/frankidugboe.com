@@ -50,15 +50,22 @@ skip-check:
   # Mirrors the Trivy AWS-0132 decision in .trivyignore.
   - CKV_AWS_145
 
-  # --- Deferred: observability (Phase F) ------------------------------------
-  # CKV_AWS_86: CloudFront access logging. Requires a log-destination bucket
-  # and belongs to the observability phase; deferred to avoid premature sprawl.
-  - CKV_AWS_86
-  # CKV_AWS_18: S3 server access logging. Same reasoning as above; needs a
-  # dedicated log bucket that itself must be governed. Deferred to Phase F.
+  # --- Implemented in Phase F (observability) -------------------------------
+  # CloudFront access logging (CKV_AWS_86), Route 53 query logging
+  # (CKV2_AWS_39) and WAF logging (CKV2_AWS_31) are now implemented and are no
+  # longer waived.
+  #
+  # CKV_AWS_18: S3 server access logging. Implemented on the origin bucket
+  # (logs to the dedicated log bucket). Still waived because it also flags the
+  # Terraform state bucket (low-traffic, Terraform-only) and the log bucket
+  # itself (a log bucket logging to itself is circular). Those two are
+  # intentionally excluded.
   - CKV_AWS_18
-  # CKV2_AWS_39: Route 53 DNS query logging. Observability concern; Phase F.
-  - CKV2_AWS_39
+  # CKV2_AWS_65: "ACLs should be disabled." The dedicated log bucket MUST have
+  # ACLs enabled (BucketOwnerPreferred) because CloudFront standard logging and
+  # S3 server access log delivery require the log-delivery ACL grant. All other
+  # buckets keep BucketOwnerEnforced. Public access is still fully blocked.
+  - CKV2_AWS_65
 
   # --- Deferred: DNSSEC ------------------------------------------------------
   # CKV2_AWS_38: Route 53 DNSSEC signing. Real hardening but moderate effort
@@ -92,9 +99,6 @@ skip-check:
   # intentionally public; abuse is mitigated by WAF, honeypot and rate limits,
   # not by IAM/JWT authorization.
   - CKV_AWS_309
-  # CKV2_AWS_31: WAF logging configuration. Requires a Kinesis Firehose/S3 log
-  # destination; deferred to the observability phase (Phase F).
-  - CKV2_AWS_31
 
   # --- Accepted risk: consistent with the SSE-S3 / retention decisions -------
   # CKV_AWS_158: CloudWatch log group KMS encryption. Logs contain no secrets;

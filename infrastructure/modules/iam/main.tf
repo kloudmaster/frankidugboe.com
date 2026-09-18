@@ -150,6 +150,8 @@ locals {
   site_bucket_arn  = "arn:aws:s3:::${var.site_bucket_name}"
   site_objects_arn = "${local.site_bucket_arn}/*"
 
+  log_bucket_arn = "arn:aws:s3:::${var.log_bucket_name}"
+
   route53_zone_arn = "arn:aws:route53:::hostedzone/${var.route53_zone_id}"
 
   github_plan_permissions_policy = jsonencode({
@@ -228,6 +230,34 @@ locals {
 
         Resource = [
           local.site_bucket_arn,
+        ]
+      },
+      {
+        Sid    = "LogBucketRead"
+        Effect = "Allow"
+
+        Action = [
+          "s3:GetAccelerateConfiguration",
+          "s3:GetBucketAcl",
+          "s3:GetBucketCORS",
+          "s3:GetBucketLocation",
+          "s3:GetBucketLogging",
+          "s3:GetBucketObjectLockConfiguration",
+          "s3:GetBucketOwnershipControls",
+          "s3:GetBucketPolicy",
+          "s3:GetBucketPublicAccessBlock",
+          "s3:GetBucketRequestPayment",
+          "s3:GetBucketTagging",
+          "s3:GetBucketVersioning",
+          "s3:GetBucketWebsite",
+          "s3:GetEncryptionConfiguration",
+          "s3:GetLifecycleConfiguration",
+          "s3:GetReplicationConfiguration",
+          "s3:ListBucket",
+        ]
+
+        Resource = [
+          local.log_bucket_arn,
         ]
       },
       {
@@ -311,6 +341,32 @@ locals {
           "wafv2:ListTagsForResource",
           "logs:DescribeLogGroups",
           "logs:ListTagsForResource",
+        ]
+
+        Resource = [
+          "*",
+        ]
+      },
+      {
+        Sid    = "ObservabilityRead"
+        Effect = "Allow"
+
+        Action = [
+          "budgets:ViewBudget",
+          "budgets:DescribeBudget",
+          "budgets:ListTagsForResource",
+          "cloudwatch:DescribeAlarms",
+          "cloudwatch:ListTagsForResource",
+          "logs:DescribeResourcePolicies",
+          "route53:GetQueryLoggingConfig",
+          "route53:ListQueryLoggingConfigs",
+          "s3:ListAllMyBuckets",
+          "sns:GetSubscriptionAttributes",
+          "sns:GetTopicAttributes",
+          "sns:ListSubscriptionsByTopic",
+          "sns:ListTagsForResource",
+          "wafv2:GetLoggingConfiguration",
+          "s3:GetBucketLogging",
         ]
 
         Resource = [
@@ -720,6 +776,200 @@ locals {
 
         Resource = [
           "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.role_name_prefix}-contact-exec",
+        ]
+      },
+      {
+        Sid    = "LogBucketManagement"
+        Effect = "Allow"
+
+        Action = [
+          "s3:CreateBucket",
+          "s3:DeleteBucket",
+          "s3:GetAccelerateConfiguration",
+          "s3:GetBucketAcl",
+          "s3:GetBucketCORS",
+          "s3:GetBucketLogging",
+          "s3:GetBucketObjectLockConfiguration",
+          "s3:GetBucketOwnershipControls",
+          "s3:GetBucketPolicy",
+          "s3:GetBucketPublicAccessBlock",
+          "s3:GetBucketRequestPayment",
+          "s3:GetBucketTagging",
+          "s3:GetBucketVersioning",
+          "s3:GetBucketWebsite",
+          "s3:GetEncryptionConfiguration",
+          "s3:GetLifecycleConfiguration",
+          "s3:GetReplicationConfiguration",
+          "s3:ListBucket",
+          "s3:PutBucketAcl",
+          "s3:PutBucketLogging",
+          "s3:PutBucketOwnershipControls",
+          "s3:PutBucketPolicy",
+          "s3:PutBucketPublicAccessBlock",
+          "s3:PutBucketTagging",
+          "s3:PutBucketVersioning",
+          "s3:PutEncryptionConfiguration",
+          "s3:PutLifecycleConfiguration",
+        ]
+
+        Resource = [
+          local.log_bucket_arn,
+        ]
+      },
+      {
+        Sid    = "SiteBucketLogging"
+        Effect = "Allow"
+
+        Action = [
+          "s3:PutBucketLogging",
+        ]
+
+        Resource = [
+          local.site_bucket_arn,
+        ]
+      },
+      {
+        Sid    = "Route53QueryLogging"
+        Effect = "Allow"
+
+        Action = [
+          "route53:CreateQueryLoggingConfig",
+          "route53:DeleteQueryLoggingConfig",
+          "route53:GetQueryLoggingConfig",
+          "route53:ListQueryLoggingConfigs",
+        ]
+
+        Resource = [
+          "*",
+        ]
+      },
+      {
+        Sid    = "ObservabilityLogsManagement"
+        Effect = "Allow"
+
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:DeleteLogGroup",
+          "logs:ListTagsForResource",
+          "logs:PutRetentionPolicy",
+          "logs:TagResource",
+          "logs:UntagResource",
+        ]
+
+        Resource = [
+          "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/route53/*",
+          "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:aws-waf-logs-*",
+        ]
+      },
+      {
+        Sid    = "LogsResourcePolicy"
+        Effect = "Allow"
+
+        Action = [
+          "logs:DeleteResourcePolicy",
+          "logs:DescribeResourcePolicies",
+          "logs:PutResourcePolicy",
+        ]
+
+        Resource = [
+          "*",
+        ]
+      },
+      {
+        Sid    = "WafLoggingConfiguration"
+        Effect = "Allow"
+
+        Action = [
+          "wafv2:DeleteLoggingConfiguration",
+          "wafv2:GetLoggingConfiguration",
+          "wafv2:PutLoggingConfiguration",
+        ]
+
+        Resource = [
+          "*",
+        ]
+      },
+      {
+        Sid    = "BudgetsManagement"
+        Effect = "Allow"
+
+        Action = [
+          "budgets:CreateBudget",
+          "budgets:DeleteBudget",
+          "budgets:ModifyBudget",
+          "budgets:ViewBudget",
+        ]
+
+        Resource = [
+          "arn:aws:budgets::${data.aws_caller_identity.current.account_id}:budget/*",
+        ]
+      },
+      {
+        Sid    = "CloudWatchAlarmManagement"
+        Effect = "Allow"
+
+        Action = [
+          "cloudwatch:DeleteAlarms",
+          "cloudwatch:DescribeAlarms",
+          "cloudwatch:ListTagsForResource",
+          "cloudwatch:PutMetricAlarm",
+          "cloudwatch:TagResource",
+          "cloudwatch:UntagResource",
+        ]
+
+        Resource = [
+          "arn:aws:cloudwatch:*:${data.aws_caller_identity.current.account_id}:alarm:${local.role_name_prefix}-*",
+        ]
+      },
+      {
+        Sid    = "SnsAlertsManagement"
+        Effect = "Allow"
+
+        Action = [
+          "sns:CreateTopic",
+          "sns:DeleteTopic",
+          "sns:GetTopicAttributes",
+          "sns:ListTagsForResource",
+          "sns:SetTopicAttributes",
+          "sns:Subscribe",
+          "sns:Unsubscribe",
+          "sns:GetSubscriptionAttributes",
+          "sns:ListSubscriptionsByTopic",
+          "sns:TagResource",
+          "sns:UntagResource",
+        ]
+
+        Resource = [
+          "arn:aws:sns:*:${data.aws_caller_identity.current.account_id}:${local.role_name_prefix}-alerts",
+        ]
+      },
+      {
+        # Broad read/list coverage for observability so Terraform refresh does
+        # not fail on a missing Get/List/Describe. Mutations remain scoped above.
+        Sid    = "ObservabilityRefreshRead"
+        Effect = "Allow"
+
+        Action = [
+          "budgets:ViewBudget",
+          "budgets:DescribeBudget",
+          "budgets:ListTagsForResource",
+          "cloudwatch:DescribeAlarms",
+          "cloudwatch:ListTagsForResource",
+          "logs:DescribeLogGroups",
+          "logs:DescribeResourcePolicies",
+          "logs:ListTagsForResource",
+          "route53:GetQueryLoggingConfig",
+          "route53:ListQueryLoggingConfigs",
+          "s3:ListAllMyBuckets",
+          "sns:GetSubscriptionAttributes",
+          "sns:GetTopicAttributes",
+          "sns:ListSubscriptionsByTopic",
+          "sns:ListTagsForResource",
+          "wafv2:GetLoggingConfiguration",
+        ]
+
+        Resource = [
+          "*",
         ]
       },
     ]

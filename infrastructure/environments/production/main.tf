@@ -2,12 +2,14 @@ data "aws_caller_identity" "current" {}
 
 locals {
   origin_bucket_name = "${replace(var.domain_name, ".", "-")}-origin-${data.aws_caller_identity.current.account_id}"
+  log_bucket_name    = "${replace(var.domain_name, ".", "-")}-logs-${data.aws_caller_identity.current.account_id}"
 }
 
 module "route53" {
   source = "../../modules/route53"
 
-  domain_name = var.domain_name
+  domain_name           = var.domain_name
+  query_logging_enabled = true
 }
 
 module "acm" {
@@ -18,10 +20,18 @@ module "acm" {
   route53_zone_id           = module.route53.zone_id
 }
 
+module "logging" {
+  source = "../../modules/logging"
+
+  bucket_name = local.log_bucket_name
+}
+
 module "s3" {
   source = "../../modules/s3"
 
-  bucket_name = local.origin_bucket_name
+  bucket_name     = local.origin_bucket_name
+  log_bucket_name = module.logging.bucket_name
+  logging_enabled = true
 }
 
 module "ses" {
@@ -53,7 +63,8 @@ module "api_gateway" {
 module "waf" {
   source = "../../modules/waf"
 
-  name = "${replace(var.domain_name, ".", "-")}-waf"
+  name            = "${replace(var.domain_name, ".", "-")}-waf"
+  logging_enabled = true
 }
 
 module "cloudfront" {
@@ -67,6 +78,8 @@ module "cloudfront" {
 
   web_acl_arn            = module.waf.web_acl_arn
   api_origin_domain_name = module.api_gateway.api_domain_name
+  log_bucket_domain_name = module.logging.bucket_domain_name
+  logging_enabled        = true
 
   aliases = [
     var.domain_name,
@@ -90,4 +103,14 @@ module "iam" {
   route53_zone_id             = module.route53.zone_id
   acm_certificate_arn         = module.acm.certificate_arn
   contact_sender_address      = var.ses_sender
+  log_bucket_name             = module.logging.bucket_name
+}
+
+module "budget" {
+  source = "../../modules/budget"
+
+  name_prefix          = replace(var.domain_name, ".", "-")
+  alert_email          = var.alert_email != "" ? var.alert_email : var.ses_recipient
+  monthly_limit_usd    = var.monthly_budget_usd
+  lambda_function_name = module.lambda.function_name
 }

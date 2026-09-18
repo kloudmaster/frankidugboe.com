@@ -25,6 +25,11 @@ with an inline comment pointing back to this document.
 | --- | --- | --- |
 | `CKV2_AWS_61` S3 lifecycle configuration | origin bucket, state bucket | Added `aws_s3_bucket_lifecycle_configuration`: expire noncurrent versions (origin 30d, state 90d) and abort incomplete multipart uploads after 7d. Real cost control; no new resources or scanner recursion. |
 | WAF on CloudFront (Phase E) | CloudFront distribution, contact API | Added a `CLOUDFRONT`-scoped WAFv2 Web ACL (`modules/waf`) with the AWS managed Common rule set, Known Bad Inputs rule set (Log4j coverage) and an IP rate-based rule, associated via `web_acl_id`. Protects the site and the contact API. |
+| CloudFront access logging (Phase F, `CKV_AWS_86`) | CloudFront distribution | `logging_config` delivers access logs to the dedicated log bucket (`cloudfront/` prefix). |
+| Route 53 query logging (Phase F, `CKV2_AWS_39`) | hosted zone | `aws_route53_query_log` to a us-east-1 CloudWatch log group with a resource policy for the Route 53 service. |
+| WAF logging (Phase F, `CKV2_AWS_31`) | WAF Web ACL | `aws_wafv2_web_acl_logging_configuration` to an `aws-waf-logs-*` CloudWatch log group. |
+| S3 origin access logging (Phase F, part of `CKV_AWS_18`) | origin bucket | `aws_s3_bucket_logging` to the dedicated log bucket. |
+| Budget + alarms (Phase F) | account, contact Lambda | Monthly cost `aws_budgets_budget` with 80% actual + 100% forecasted email alerts, plus a Lambda-errors CloudWatch alarm, both via an (AWS-managed-KMS-encrypted) SNS topic. |
 
 ## Waived
 
@@ -59,16 +64,25 @@ with an inline comment pointing back to this document.
 
 ## Deferred
 
-### Observability — Phase F
+### Observability — Phase F (implemented)
 
-- **`CKV_AWS_86` — CloudFront access logging.**
-- **`CKV_AWS_18` — S3 server access logging.**
-- **`CKV2_AWS_39` — Route 53 DNS query logging.**
+CloudFront access logging (`CKV_AWS_86`), Route 53 query logging
+(`CKV2_AWS_39`) and WAF logging (`CKV2_AWS_31`) are implemented and no longer
+waived. The remaining logging-related waivers are:
 
-  These require dedicated log-destination bucket(s) that must themselves be
-  governed (a log bucket triggers its own scanner findings). They belong to
-  the observability phase and are deferred together to avoid premature
-  infrastructure sprawl driven by the scanner rather than by need.
+- **`CKV_AWS_18` — S3 server access logging.** Implemented on the origin bucket
+  (delivers to the dedicated log bucket). Still waived because the check also
+  flags the Terraform state bucket (low-traffic, Terraform-only) and the log
+  bucket itself (a log bucket cannot log to itself). Those two are intentionally
+  excluded.
+- **`CKV2_AWS_65` — S3 ACLs should be disabled.** The dedicated log bucket must
+  enable ACLs (`BucketOwnerPreferred`) because CloudFront standard logging and
+  S3 server access log delivery require the log-delivery ACL grant. All other
+  buckets keep `BucketOwnerEnforced`, and the log bucket still blocks all public
+  access.
+- **Trivy `AWS-0136` — SNS customer-managed KMS key.** The alerts topic carries
+  only budget/alarm notifications and uses the AWS-managed SNS key; a CMK adds
+  cost/complexity for no meaningful gain, consistent with the SSE-S3 decision.
 
 ### DNSSEC — post-launch
 
@@ -107,10 +121,11 @@ new checks. Classifications:
 
 Deferred items should be revisited at their named phase:
 
-1. **Phase F** (observability): remove `CKV_AWS_86`, `CKV_AWS_18`,
-   `CKV2_AWS_39`, `CKV2_AWS_31` and implement logging with a governed log
-   destination.
-2. **Post-launch**: remove `CKV2_AWS_38` and implement DNSSEC.
+1. **Post-launch**: remove `CKV2_AWS_38` and implement DNSSEC.
+
+Phases E (contact backend + WAF) and F (observability, logging, budget) are
+implemented; their remaining entries above are permanent waivers (false
+positives, not-applicable, or accepted risk), not deferrals.
 
 Accepted-risk and not-applicable waivers should be re-confirmed whenever the
 architecture materially changes (for example, if the origin ever stores

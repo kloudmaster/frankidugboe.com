@@ -29,6 +29,16 @@ resource "aws_cloudfront_distribution" "this" {
   aliases             = var.aliases
   web_acl_id          = var.web_acl_arn != "" ? var.web_acl_arn : null
 
+  dynamic "logging_config" {
+    for_each = var.logging_enabled ? [1] : []
+
+    content {
+      bucket          = var.log_bucket_domain_name
+      prefix          = "cloudfront/"
+      include_cookies = false
+    }
+  }
+
   origin {
     domain_name              = var.origin_domain_name
     origin_id                = local.origin_id

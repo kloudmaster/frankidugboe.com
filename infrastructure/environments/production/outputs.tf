@@ -72,3 +72,13 @@ output "ses_domain_identity" {
   description = "The SES verified sending domain identity."
   value       = module.ses.domain_identity
 }
+
+output "log_bucket_name" {
+  description = "Name of the access-log destination bucket."
+  value       = module.logging.bucket_name
+}
+
+output "alerts_sns_topic_arn" {
+  description = "ARN of the budget/alarm alerts SNS topic."
+  value       = module.budget.sns_topic_arn
+}

@@ -86,3 +86,24 @@ resource "aws_wafv2_web_acl" "this" {
     Name = var.name
   }
 }
+
+# WAF logging. The destination CloudWatch log group name MUST start with
+# "aws-waf-logs-". For a CLOUDFRONT-scoped Web ACL the log group must be in
+# us-east-1 (the region this stack runs in). Enabled when logging_enabled.
+resource "aws_cloudwatch_log_group" "waf" {
+  count = var.logging_enabled ? 1 : 0
+
+  name              = "aws-waf-logs-${var.name}"
+  retention_in_days = var.log_retention_days
+
+  tags = {
+    Name = "aws-waf-logs-${var.name}"
+  }
+}
+
+resource "aws_wafv2_web_acl_logging_configuration" "this" {
+  count = var.logging_enabled ? 1 : 0
+
+  resource_arn            = aws_wafv2_web_acl.this.arn
+  log_destination_configs = [aws_cloudwatch_log_group.waf[0].arn]
+}

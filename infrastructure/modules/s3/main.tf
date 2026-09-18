@@ -71,3 +71,13 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
     }
   }
 }
+
+# Optional S3 server access logging to a dedicated log bucket. Enabled when
+# log_bucket_name is set; empty disables it (keeps the module usable standalone).
+resource "aws_s3_bucket_logging" "this" {
+  count = var.logging_enabled ? 1 : 0
+
+  bucket        = aws_s3_bucket.this.id
+  target_bucket = var.log_bucket_name
+  target_prefix = "s3-origin/"
+}
