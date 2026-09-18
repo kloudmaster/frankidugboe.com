@@ -36,9 +36,9 @@ const capabilities = [
       description="I am a Cloud & DevOps Engineer with 8+ years of experience across infrastructure, automation, cloud security, production operations, and technical leadership."
     />
 
-    <section class="bg-white py-16">
+    <section class="bg-white py-16 lg:py-20">
       <div class="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1.4fr_0.8fr] lg:px-8">
-        <div>
+        <div class="reveal">
           <h2 class="text-2xl font-bold tracking-tight text-slate-950">
             Engineering background
           </h2>
@@ -57,6 +57,8 @@ const capabilities = [
             infrastructure, secure access, observable systems, documented
             engineering decisions, and practical incident analysis.
           </p>
+
+          <div class="mt-12 h-px w-16 bg-sky-200" aria-hidden="true"></div>
 
           <h2 class="mt-12 text-2xl font-bold tracking-tight text-slate-950">
             Digital Forensics research
@@ -77,8 +79,8 @@ const capabilities = [
           </p>
         </div>
 
-        <aside>
-          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-7">
+        <aside class="reveal reveal-delay-1">
+          <div class="card-lift rounded-2xl border border-slate-200 bg-slate-50 p-7 hover:border-sky-200 hover:shadow-md">
             <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
               Core capabilities
             </p>
@@ -86,7 +88,7 @@ const capabilities = [
             <div class="mt-6 flex flex-wrap gap-2">
               {
                 capabilities.map((capability) => (
-                  <span class="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700">
+                  <span class="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-700">
                     {capability}
                   </span>
                 ))
@@ -94,18 +96,27 @@ const capabilities = [
             </div>
           </div>
 
-          <div class="mt-6 rounded-2xl bg-slate-950 p-7 text-white">
+          <div class="card-lift mt-6 rounded-2xl bg-slate-950 p-7 text-white hover:shadow-lg hover:shadow-sky-500/10">
             <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-400">
               Current focus
             </p>
 
             <ul class="mt-5 space-y-3 text-sm leading-6 text-slate-300">
-              <li>Cloud & DevOps Engineering</li>
-              <li>Cloud Security</li>
-              <li>AWS & Kubernetes</li>
-              <li>Infrastructure as Code</li>
-              <li>Digital Forensics Research</li>
-              <li>Technical Writing & Community</li>
+              {
+                [
+                  'Cloud & DevOps Engineering',
+                  'Cloud Security',
+                  'AWS & Kubernetes',
+                  'Infrastructure as Code',
+                  'Digital Forensics Research',
+                  'Technical Writing & Community',
+                ].map((item) => (
+                  <li class="flex items-start gap-3">
+                    <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-sky-400" aria-hidden="true" />
+                    {item}
+                  </li>
+                ))
+              }
             </ul>
           </div>
         </aside>

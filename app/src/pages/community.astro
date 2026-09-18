@@ -59,8 +59,8 @@ const focusAreas = [
       <div class="mx-auto max-w-6xl px-6 lg:px-8">
         <div class="grid gap-6 md:grid-cols-2">
           {
-            communityAreas.map((area) => (
-              <article class="rounded-2xl border border-slate-200 p-7">
+            communityAreas.map((area, index) => (
+              <article class={`reveal card-lift rounded-2xl border border-slate-200 p-7 hover:border-sky-200 hover:shadow-md ${index === 1 ? 'reveal-delay-1' : index === 2 ? 'reveal-delay-2' : index === 3 ? 'reveal-delay-3' : ''}`}>
                 <h2 class="text-xl font-bold text-slate-950">
                   {area.title}
                 </h2>
@@ -77,29 +77,32 @@ const focusAreas = [
 
     <section class="bg-slate-950 py-20 text-white">
       <div class="mx-auto max-w-6xl px-6 lg:px-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-400">
-          Community focus
-        </p>
+        <div class="reveal">
+          <p class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-sky-400">
+            <span class="h-px w-8 bg-sky-500" aria-hidden="true"></span>
+            Community focus
+          </p>
 
-        <h2 class="mt-3 max-w-3xl text-3xl font-bold tracking-tight">
-          Practical engineering experience translated into reusable knowledge.
-        </h2>
+          <h2 class="mt-3 max-w-3xl text-3xl font-bold tracking-tight">
+            Practical engineering experience translated into reusable knowledge.
+          </h2>
 
-        <p class="mt-6 max-w-3xl leading-8 text-slate-300">
-          My community participation centers on documenting what works,
-          explaining engineering decisions, helping others troubleshoot
-          infrastructure problems, and sharing lessons from hands-on cloud and
-          DevOps work.
-        </p>
+          <p class="mt-6 max-w-3xl leading-8 text-slate-300">
+            My community participation centers on documenting what works,
+            explaining engineering decisions, helping others troubleshoot
+            infrastructure problems, and sharing lessons from hands-on cloud and
+            DevOps work.
+          </p>
 
-        <div class="mt-8 flex flex-wrap gap-2">
-          {
-            focusAreas.map((area) => (
-              <span class="rounded-full border border-slate-700 px-3 py-1.5 text-sm text-slate-300">
-                {area}
-              </span>
-            ))
-          }
+          <div class="mt-8 flex flex-wrap gap-2">
+            {
+              focusAreas.map((area) => (
+                <span class="rounded-full border border-slate-700 px-3 py-1.5 text-sm text-slate-300">
+                  {area}
+                </span>
+              ))
+            }
+          </div>
         </div>
       </div>
     </section>

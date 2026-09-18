@@ -43,7 +43,7 @@ const researchStack = [
     <section class="bg-white py-20">
       <div class="mx-auto max-w-5xl px-6 lg:px-8">
         <div class="grid gap-12 lg:grid-cols-[1.3fr_0.7fr]">
-          <div>
+          <div class="reveal">
             <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
               Current research
             </p>
@@ -70,7 +70,7 @@ const researchStack = [
             </p>
           </div>
 
-          <aside class="rounded-2xl bg-slate-950 p-7 text-white">
+          <aside class="reveal reveal-delay-1 card-lift rounded-2xl bg-slate-950 p-7 text-white hover:shadow-lg hover:shadow-sky-500/10">
             <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-400">
               Research areas
             </p>
@@ -91,52 +91,56 @@ const researchStack = [
 
     <section class="bg-slate-50 py-20">
       <div class="mx-auto max-w-5xl px-6 lg:px-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
-          Proposed technology path
-        </p>
+        <div class="reveal">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Proposed technology path
+          </p>
 
-        <h2 class="mt-3 text-3xl font-bold tracking-tight text-slate-950">
-          From edge identification to cloud evidence workflows
-        </h2>
+          <h2 class="mt-3 text-3xl font-bold tracking-tight text-slate-950">
+            From edge identification to cloud evidence workflows
+          </h2>
 
-        <div class="mt-8 rounded-2xl bg-slate-950 p-7 font-mono text-sm leading-8 text-slate-300">
-          <p>ESP32 + RFID / Sensors</p>
-          <p class="pl-4">↓</p>
-          <p>LoRa</p>
-          <p class="pl-4">↓</p>
-          <p>Raspberry Pi Gateway</p>
-          <p class="pl-4">↓</p>
-          <p>MQTT + Local Database</p>
-          <p class="pl-4">↓</p>
-          <p>AWS IoT Core / ThingsBoard</p>
-          <p class="pl-4">↓</p>
-          <p>Forensic-ready logging and evidence analysis</p>
-        </div>
+          <div class="mt-8 rounded-2xl bg-slate-950 p-7 font-mono text-sm leading-8 text-slate-300">
+            <p>ESP32 + RFID / Sensors</p>
+            <p class="pl-4">↓</p>
+            <p>LoRa</p>
+            <p class="pl-4">↓</p>
+            <p>Raspberry Pi Gateway</p>
+            <p class="pl-4">↓</p>
+            <p>MQTT + Local Database</p>
+            <p class="pl-4">↓</p>
+            <p>AWS IoT Core / ThingsBoard</p>
+            <p class="pl-4">↓</p>
+            <p>Forensic-ready logging and evidence analysis</p>
+          </div>
 
-        <div class="mt-8 flex flex-wrap gap-2">
-          {
-            researchStack.map((technology) => (
-              <span class="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700">
-                {technology}
-              </span>
-            ))
-          }
+          <div class="mt-8 flex flex-wrap gap-2">
+            {
+              researchStack.map((technology) => (
+                <span class="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700">
+                  {technology}
+                </span>
+              ))
+            }
+          </div>
         </div>
       </div>
     </section>
 
     <section class="bg-white py-20">
       <div class="mx-auto max-w-5xl px-6 lg:px-8">
-        <h2 class="text-3xl font-bold tracking-tight text-slate-950">
-          Research perspective
-        </h2>
+        <div class="reveal">
+          <h2 class="text-3xl font-bold tracking-tight text-slate-950">
+            Research perspective
+          </h2>
 
-        <p class="mt-6 max-w-4xl leading-8 text-slate-600">
-          My broader interests include cloud forensics, IoT forensics,
-          forensic-ready infrastructure, digital evidence workflows,
-          trustworthy logging, and the relationship between operational
-          observability and forensic investigation.
-        </p>
+          <p class="mt-6 max-w-4xl leading-8 text-slate-600">
+            My broader interests include cloud forensics, IoT forensics,
+            forensic-ready infrastructure, digital evidence workflows,
+            trustworthy logging, and the relationship between operational
+            observability and forensic investigation.
+          </p>
+        </div>
       </div>
     </section>
   </main>
