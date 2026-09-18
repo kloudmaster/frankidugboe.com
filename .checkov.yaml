@@ -50,14 +50,6 @@ skip-check:
   # Mirrors the Trivy AWS-0132 decision in .trivyignore.
   - CKV_AWS_145
 
-  # --- Deferred: WAF (revisit in Phase E, with the contact backend) ---------
-  # A WAF delivers little value in front of a pure static S3 origin with no
-  # compute. It becomes worthwhile once the API Gateway/Lambda contact backend
-  # exists, where it will be placed. Mirrors Trivy AWS-0011.
-  - CKV_AWS_68
-  # CKV2_AWS_47: Log4j AMR on the CloudFront WAF ACL. Depends on the WAF above.
-  - CKV2_AWS_47
-
   # --- Deferred: observability (Phase F) ------------------------------------
   # CKV_AWS_86: CloudFront access logging. Requires a log-destination bucket
   # and belongs to the observability phase; deferred to avoid premature sprawl.
@@ -72,3 +64,45 @@ skip-check:
   # CKV2_AWS_38: Route 53 DNSSEC signing. Real hardening but moderate effort
   # (KMS key + KSK + parent DS record at the registrar). Scheduled post-launch.
   - CKV2_AWS_38
+
+  # ==========================================================================
+  # Contact backend (Phase E): API Gateway -> Lambda -> SES, WAF on CloudFront
+  # ==========================================================================
+
+  # --- False positive: WAF is attached but not statically resolvable --------
+  # CKV_AWS_68 / CKV2_AWS_47: The CloudFront distribution DOES have a WAFv2
+  # Web ACL attached (module.waf -> cloudfront web_acl_id), including the
+  # Known Bad Inputs rule set that covers Log4j (CKV2_AWS_47). Because the
+  # association is a cross-module variable reference rather than a literal,
+  # Checkov's static graph cannot resolve it and reports false positives.
+  - CKV_AWS_68
+  - CKV2_AWS_47
+
+  # --- Not applicable to a simple first-party contact function --------------
+  # CKV_AWS_116: Lambda DLQ. The synchronous contact handler returns errors to
+  # the caller (HTTP 502); there is no async event source needing a DLQ.
+  - CKV_AWS_116
+  # CKV_AWS_117: Lambda in a VPC. The function only calls the public SES API;
+  # a VPC would add NAT cost and complexity with no security gain.
+  - CKV_AWS_117
+  # CKV_AWS_272: Lambda code signing. Overkill for a single first-party
+  # function deployed from this repo's own build.
+  - CKV_AWS_272
+  # CKV_AWS_309: API GatewayV2 route authorization. The contact endpoint is
+  # intentionally public; abuse is mitigated by WAF, honeypot and rate limits,
+  # not by IAM/JWT authorization.
+  - CKV_AWS_309
+  # CKV2_AWS_31: WAF logging configuration. Requires a Kinesis Firehose/S3 log
+  # destination; deferred to the observability phase (Phase F).
+  - CKV2_AWS_31
+
+  # --- Accepted risk: consistent with the SSE-S3 / retention decisions -------
+  # CKV_AWS_158: CloudWatch log group KMS encryption. Logs contain no secrets;
+  # AWS default encryption is sufficient. Consistent with the CKV_AWS_145 stance.
+  - CKV_AWS_158
+  # CKV_AWS_173: Lambda environment variable KMS. Env vars are encrypted with
+  # an AWS-managed key by default; a CMK adds cost/complexity for no real gain.
+  - CKV_AWS_173
+  # CKV_AWS_338: One-year log retention. 30-day retention is a deliberate cost
+  # choice appropriate to a portfolio's operational needs.
+  - CKV_AWS_338

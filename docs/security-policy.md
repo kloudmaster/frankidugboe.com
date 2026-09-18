@@ -24,6 +24,7 @@ with an inline comment pointing back to this document.
 | Check | Resource(s) | Action |
 | --- | --- | --- |
 | `CKV2_AWS_61` S3 lifecycle configuration | origin bucket, state bucket | Added `aws_s3_bucket_lifecycle_configuration`: expire noncurrent versions (origin 30d, state 90d) and abort incomplete multipart uploads after 7d. Real cost control; no new resources or scanner recursion. |
+| WAF on CloudFront (Phase E) | CloudFront distribution, contact API | Added a `CLOUDFRONT`-scoped WAFv2 Web ACL (`modules/waf`) with the AWS managed Common rule set, Known Bad Inputs rule set (Log4j coverage) and an IP rate-based rule, associated via `web_acl_id`. Protects the site and the contact API. |
 
 ## Waived
 
@@ -58,15 +59,6 @@ with an inline comment pointing back to this document.
 
 ## Deferred
 
-### WAF — revisit in Phase E (contact backend)
-
-- **`CKV_AWS_68` / Trivy `AWS-0011` — CloudFront WAF.** A WAF adds little value
-  ahead of a pure static S3 origin with no compute. It becomes worthwhile once
-  the API Gateway/Lambda contact backend exists, where it will be placed to
-  protect an actual request-processing surface.
-- **`CKV2_AWS_47` — Log4j AMR on the CloudFront WAF ACL.** Depends on the WAF
-  above; deferred with it.
-
 ### Observability — Phase F
 
 - **`CKV_AWS_86` — CloudFront access logging.**
@@ -84,15 +76,41 @@ with an inline comment pointing back to this document.
   effort (KMS key + key-signing key + parent DS record at the registrar).
   Scheduled post-launch.
 
+## Contact backend (Phase E)
+
+The API Gateway -> Lambda -> SES contact backend and its CloudFront WAF added
+new checks. Classifications:
+
+### False positive — WAF attached but not statically resolvable
+
+- **`CKV_AWS_68` / `CKV2_AWS_47` / Trivy `AWS-0011`.** The distribution attaches
+  a WAFv2 Web ACL via `module.waf` -> `web_acl_id`, including Known Bad Inputs
+  (Log4j) coverage. Because the association is a cross-module variable
+  reference, not a literal, the scanners' static graphs cannot resolve it.
+
+### Not applicable to a simple first-party contact function
+
+- **`CKV_AWS_116`** Lambda DLQ — synchronous handler returns errors to caller.
+- **`CKV_AWS_117`** Lambda in VPC — only calls the public SES API.
+- **`CKV_AWS_272`** Lambda code signing — single first-party function.
+- **`CKV_AWS_309`** API route authorization — the contact endpoint is
+  intentionally public; abuse is handled by WAF + honeypot + rate limiting.
+- **`CKV2_AWS_31`** WAF logging — needs a log destination; deferred to Phase F.
+
+### Accepted risk — consistent with the SSE-S3 / retention decisions
+
+- **`CKV_AWS_158`** CloudWatch log group KMS — logs hold no secrets.
+- **`CKV_AWS_173`** Lambda env var KMS — AWS-managed key encryption is default.
+- **`CKV_AWS_338`** one-year log retention — 30 days is a deliberate cost choice.
+
 ## Review cadence
 
 Deferred items should be revisited at their named phase:
 
-1. **Phase E** (contact backend): remove `CKV_AWS_68`, `CKV2_AWS_47` and Trivy
-   `AWS-0011` from the ignore lists and place a WAF in front of the API.
-2. **Phase F** (observability): remove `CKV_AWS_86`, `CKV_AWS_18`,
-   `CKV2_AWS_39` and implement logging with a governed log bucket.
-3. **Post-launch**: remove `CKV2_AWS_38` and implement DNSSEC.
+1. **Phase F** (observability): remove `CKV_AWS_86`, `CKV_AWS_18`,
+   `CKV2_AWS_39`, `CKV2_AWS_31` and implement logging with a governed log
+   destination.
+2. **Post-launch**: remove `CKV2_AWS_38` and implement DNSSEC.
 
 Accepted-risk and not-applicable waivers should be re-confirmed whenever the
 architecture materially changes (for example, if the origin ever stores

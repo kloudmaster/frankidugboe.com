@@ -58,6 +58,41 @@ Environment-scoped variables are not required because `AWS_REGION` and
    npm build -> two S3 sync passes -> CloudFront invalidation -> HTTPS smoke
    test returning `HTTP 200` with an `strict-transport-security` header.
 
+## Contact backend (Phase E)
+
+The contact form posts to `/api/contact`, routed by CloudFront to an API
+Gateway HTTP API backed by a Lambda that sends mail via Amazon SES. Two manual
+prerequisites apply:
+
+### `SES_RECIPIENT` secret
+
+The private inbox that receives contact submissions is never committed. Add it
+as a GitHub Actions **secret** named `SES_RECIPIENT`; the deploy workflow passes
+it to Terraform as `TF_VAR_ses_recipient` during `terraform apply`.
+
+Settings -> Secrets and variables -> Actions -> Secrets -> New repository secret:
+
+| Name            | Value                          |
+| --------------- | ------------------------------ |
+| `SES_RECIPIENT` | your private destination inbox |
+
+The sender address defaults to `no-reply@frankidugboe.com` (the SES-verified
+sending domain) and can be overridden via the `ses_sender` variable.
+
+### SES sandbox
+
+A new AWS account's SES is in the **sandbox**, which can only send to verified
+addresses. Before the form can deliver to an arbitrary inbox:
+
+- Verify the `SES_RECIPIENT` address in the SES console (sufficient if you only
+  ever send to your own inbox), **or**
+- Request SES production access (Account dashboard -> Request production access)
+  to lift the sandbox restriction.
+
+The sending domain's DKIM, SPF and custom MAIL FROM records are provisioned by
+the `ses` Terraform module; DKIM verification can take time to propagate after
+the first apply.
+
 ## Notes and design decisions
 
 - **No invalidation wait**: the deploy role intentionally does not include

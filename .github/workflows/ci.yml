@@ -43,3 +43,23 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  contact-function:
+    name: Contact function tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: functions/contact
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Run unit tests
+        run: node --test

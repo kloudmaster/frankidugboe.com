@@ -53,6 +53,8 @@ jobs:
         run: terraform -chdir="$TF_WORKDIR" init -input=false
 
       - name: Terraform apply
+        env:
+          TF_VAR_ses_recipient: ${{ secrets.SES_RECIPIENT }}
         run: |
           terraform -chdir="$TF_WORKDIR" apply \
             -input=false -no-color -auto-approve -lock-timeout=5m

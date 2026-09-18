@@ -5,10 +5,10 @@
 # docs/security-policy.md and mirrored in .checkov.yaml.
 
 # AWS-0011 (HIGH): CloudFront distribution does not have a WAF in front.
-# Deferred. A WAF adds little value ahead of a pure static S3 origin with no
-# compute. It will be added in Phase E in front of the API Gateway/Lambda
-# contact backend, where it protects an actual request-processing surface.
-# Mirrors Checkov CKV_AWS_68.
+# False positive under static analysis. The distribution DOES attach a WAFv2
+# Web ACL (module.waf -> cloudfront web_acl_id). Because the association is a
+# cross-module variable reference rather than a literal, Trivy cannot resolve
+# it statically. Mirrors Checkov CKV_AWS_68.
 AWS-0011
 
 # AWS-0132 (HIGH): S3 encryption should use Customer Managed Keys.
