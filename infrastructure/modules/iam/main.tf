@@ -655,7 +655,6 @@ locals {
         Action = [
           "logs:CreateLogGroup",
           "logs:DeleteLogGroup",
-          "logs:DescribeLogGroups",
           "logs:ListTagsForResource",
           "logs:PutRetentionPolicy",
           "logs:TagResource",
@@ -665,6 +664,50 @@ locals {
         Resource = [
           "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.role_name_prefix}-contact*",
           "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/apigateway/${local.role_name_prefix}-contact*",
+        ]
+      },
+      {
+        # DescribeLogGroups is a list operation and does not support
+        # resource-level scoping; it must be granted on all log groups.
+        Sid    = "ContactLogsDescribe"
+        Effect = "Allow"
+
+        Action = [
+          "logs:DescribeLogGroups",
+        ]
+
+        Resource = [
+          "*",
+        ]
+      },
+      {
+        # Broad read/list coverage for the contact backend so Terraform's
+        # refresh (which reads many attributes across services) never fails on
+        # a missing Get/List/Describe. Mutating actions remain resource-scoped
+        # in the statements above; this statement grants only reads.
+        Sid    = "ContactBackendRefreshRead"
+        Effect = "Allow"
+
+        Action = [
+          "apigateway:GET",
+          "lambda:GetFunction",
+          "lambda:GetFunctionCodeSigningConfig",
+          "lambda:GetFunctionConcurrency",
+          "lambda:GetFunctionConfiguration",
+          "lambda:GetPolicy",
+          "lambda:ListTags",
+          "lambda:ListVersionsByFunction",
+          "logs:DescribeLogGroups",
+          "logs:ListTagsForResource",
+          "ses:GetEmailIdentity",
+          "ses:GetEmailIdentityPolicies",
+          "ses:ListTagsForResource",
+          "wafv2:GetWebACL",
+          "wafv2:ListTagsForResource",
+        ]
+
+        Resource = [
+          "*",
         ]
       },
       {
