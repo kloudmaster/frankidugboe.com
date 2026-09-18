@@ -72,6 +72,13 @@ mock_provider "aws" {
     }
   }
 
+  mock_resource "aws_kms_key" {
+    defaults = {
+      arn    = "arn:aws:kms:us-east-1:216066926519:key/mock-dnssec-key"
+      key_id = "mock-dnssec-key"
+    }
+  }
+
   mock_resource "aws_wafv2_web_acl" {
     defaults = {
       arn = "arn:aws:wafv2:us-east-1:216066926519:global/webacl/frankidugboe-com-waf/mock"
