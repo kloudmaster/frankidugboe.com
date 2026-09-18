@@ -14,9 +14,9 @@ variable "lambda_function_name" {
 }
 
 variable "route_path" {
-  description = "Path for the contact route (behind CloudFront's /api/* behavior)."
+  description = "Path for the contact route. CloudFront forwards the full /api/* path without stripping, so this includes the /api prefix."
   type        = string
-  default     = "/contact"
+  default     = "/api/contact"
 }
 
 variable "log_retention_days" {

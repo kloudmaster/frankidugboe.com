@@ -15,8 +15,8 @@ run "configures_contact_http_api" {
   }
 
   assert {
-    condition     = aws_apigatewayv2_route.contact.route_key == "POST /contact"
-    error_message = "The contact route must be POST /contact."
+    condition     = aws_apigatewayv2_route.contact.route_key == "POST /api/contact"
+    error_message = "The contact route must be POST /api/contact to match the CloudFront-forwarded path."
   }
 
   assert {
