@@ -8,3 +8,15 @@ variable "rate_limit" {
   type        = number
   default     = 1000
 }
+
+variable "logging_enabled" {
+  description = "Enable WAF logging to a CloudWatch log group (aws-waf-logs-*)."
+  type        = bool
+  default     = false
+}
+
+variable "log_retention_days" {
+  description = "Retention period for WAF logs."
+  type        = number
+  default     = 30
+}

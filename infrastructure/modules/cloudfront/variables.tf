@@ -45,3 +45,15 @@ variable "api_path_pattern" {
   type        = string
   default     = "/api/*"
 }
+
+variable "log_bucket_domain_name" {
+  description = "Log bucket domain name for CloudFront access logging. Empty disables logging."
+  type        = string
+  default     = ""
+}
+
+variable "logging_enabled" {
+  description = "Enable CloudFront access logging (statically known so the block is plannable)."
+  type        = bool
+  default     = false
+}
