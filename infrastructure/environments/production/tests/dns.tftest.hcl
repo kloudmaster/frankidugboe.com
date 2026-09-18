@@ -5,6 +5,12 @@ mock_provider "aws" {
     }
   }
 
+  mock_data "aws_iam_policy_document" {
+    defaults = {
+      json = "{\"Version\":\"2012-10-17\",\"Statement\":[]}"
+    }
+  }
+
   mock_resource "aws_route53_zone" {
     defaults = {
       zone_id = "Z05203182KTV9HKTZIEXD"
@@ -52,13 +58,36 @@ mock_provider "aws" {
       hosted_zone_id = "Z2FDTNDATAQYW2"
     }
   }
+
+  mock_resource "aws_cloudwatch_log_group" {
+    defaults = {
+      arn = "arn:aws:logs:us-east-1:216066926519:log-group:/aws/mock:*"
+    }
+  }
+
+  mock_resource "aws_apigatewayv2_api" {
+    defaults = {
+      id            = "mockapiid00"
+      api_endpoint  = "https://mockapiid00.execute-api.us-east-1.amazonaws.com"
+      execution_arn = "arn:aws:execute-api:us-east-1:216066926519:mockapiid00"
+    }
+  }
+
+  mock_resource "aws_iam_role" {
+    defaults = {
+      arn = "arn:aws:iam::216066926519:role/mock-role"
+    }
+  }
 }
+
+mock_provider "archive" {}
 
 run "creates_cloudfront_dns_aliases" {
   command = apply
 
   variables {
-    domain_name = "frankidugboe.com"
+    domain_name   = "frankidugboe.com"
+    ses_recipient = "private@frankidugboe.com"
   }
 
   assert {

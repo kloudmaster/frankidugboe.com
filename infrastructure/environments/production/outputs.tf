@@ -52,3 +52,23 @@ output "github_deploy_role_arn" {
   description = "ARN of the GitHub Actions production deploy role."
   value       = module.iam.github_deploy_role_arn
 }
+
+output "contact_api_endpoint" {
+  description = "Default endpoint of the contact HTTP API (fronted by CloudFront /api/*)."
+  value       = module.api_gateway.api_endpoint
+}
+
+output "contact_function_name" {
+  description = "Name of the contact Lambda function."
+  value       = module.lambda.function_name
+}
+
+output "waf_web_acl_arn" {
+  description = "ARN of the CloudFront WAF Web ACL."
+  value       = module.waf.web_acl_arn
+}
+
+output "ses_domain_identity" {
+  description = "The SES verified sending domain identity."
+  value       = module.ses.domain_identity
+}

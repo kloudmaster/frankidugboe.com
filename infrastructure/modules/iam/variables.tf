@@ -47,3 +47,9 @@ variable "acm_certificate_arn" {
   description = "ARN of the ACM certificate used by the portfolio."
   type        = string
 }
+
+variable "contact_sender_address" {
+  description = "Verified SES sender address the contact Lambda is permitted to send from."
+  type        = string
+  default     = "no-reply@frankidugboe.com"
+}

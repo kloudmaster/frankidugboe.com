@@ -24,6 +24,38 @@ module "s3" {
   bucket_name = local.origin_bucket_name
 }
 
+module "ses" {
+  source = "../../modules/ses"
+
+  domain_name     = var.domain_name
+  route53_zone_id = module.route53.zone_id
+  aws_region      = var.aws_region
+}
+
+module "lambda" {
+  source = "../../modules/lambda"
+
+  function_name      = "${replace(var.domain_name, ".", "-")}-contact"
+  source_dir         = "${path.root}/../../../functions/contact"
+  execution_role_arn = module.iam.contact_exec_role_arn
+  ses_sender         = var.ses_sender
+  ses_recipient      = var.ses_recipient
+}
+
+module "api_gateway" {
+  source = "../../modules/api-gateway"
+
+  name                 = "${replace(var.domain_name, ".", "-")}-contact"
+  lambda_invoke_arn    = module.lambda.invoke_arn
+  lambda_function_name = module.lambda.function_name
+}
+
+module "waf" {
+  source = "../../modules/waf"
+
+  name = "${replace(var.domain_name, ".", "-")}-waf"
+}
+
 module "cloudfront" {
   source = "../../modules/cloudfront"
 
@@ -32,6 +64,9 @@ module "cloudfront" {
   origin_bucket_name  = module.s3.bucket_name
   origin_bucket_arn   = module.s3.bucket_arn
   acm_certificate_arn = module.acm.certificate_arn
+
+  web_acl_arn            = module.waf.web_acl_arn
+  api_origin_domain_name = module.api_gateway.api_domain_name
 
   aliases = [
     var.domain_name,
@@ -54,4 +89,5 @@ module "iam" {
   cloudfront_distribution_arn = module.cloudfront.distribution_arn
   route53_zone_id             = module.route53.zone_id
   acm_certificate_arn         = module.acm.certificate_arn
+  contact_sender_address      = var.ses_sender
 }

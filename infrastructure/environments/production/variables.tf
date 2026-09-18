@@ -15,3 +15,14 @@ variable "domain_name" {
   type        = string
   default     = "frankidugboe.com"
 }
+
+variable "ses_sender" {
+  description = "Verified SES sender address used as the contact email From."
+  type        = string
+  default     = "no-reply@frankidugboe.com"
+}
+
+variable "ses_recipient" {
+  description = "Private inbox that receives contact submissions. Supply via TF_VAR_ses_recipient; never commit."
+  type        = string
+}

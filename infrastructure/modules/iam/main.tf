@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 locals {
   github_repository = "${var.github_repository_owner}@${var.github_repository_owner_id}/${var.github_repository_name}@${var.github_repository_id}"
   role_name_prefix  = replace(var.github_repository_name, ".", "-")
@@ -77,6 +79,67 @@ resource "aws_iam_role" "github_deploy" {
   tags = {
     Name = "${local.role_name_prefix}-github-deploy"
   }
+}
+
+# Execution role for the contact Lambda. Created in the security plane (this
+# module) rather than by the deploy pipeline, which deliberately has no IAM
+# create/modify permissions. The deploy role only holds iam:PassRole for it.
+data "aws_iam_policy_document" "contact_exec_assume" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "contact_exec" {
+  name               = "${local.role_name_prefix}-contact-exec"
+  assume_role_policy = data.aws_iam_policy_document.contact_exec_assume.json
+
+  tags = {
+    Name = "${local.role_name_prefix}-contact-exec"
+  }
+}
+
+data "aws_iam_policy_document" "contact_exec" {
+  statement {
+    sid    = "Logging"
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+
+    resources = [
+      "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.role_name_prefix}-contact:*",
+    ]
+  }
+
+  statement {
+    sid    = "SendEmail"
+    effect = "Allow"
+
+    actions = ["ses:SendEmail"]
+
+    resources = ["*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "ses:FromAddress"
+      values   = [var.contact_sender_address]
+    }
+  }
+}
+
+resource "aws_iam_role_policy" "contact_exec" {
+  name   = "${local.role_name_prefix}-contact-exec-permissions"
+  role   = aws_iam_role.contact_exec.id
+  policy = data.aws_iam_policy_document.contact_exec.json
 }
 
 locals {
@@ -222,6 +285,28 @@ locals {
           "iam:ListAttachedRolePolicies",
           "iam:ListRolePolicies",
           "iam:ListRoleTags",
+        ]
+
+        Resource = [
+          "*",
+        ]
+      },
+      {
+        Sid    = "ContactBackendRead"
+        Effect = "Allow"
+
+        Action = [
+          "lambda:GetFunction",
+          "lambda:GetFunctionConfiguration",
+          "lambda:GetPolicy",
+          "lambda:ListVersionsByFunction",
+          "apigateway:GET",
+          "ses:GetEmailIdentity",
+          "ses:GetEmailIdentityPolicies",
+          "wafv2:GetWebACL",
+          "wafv2:ListTagsForResource",
+          "logs:DescribeLogGroups",
+          "logs:ListTagsForResource",
         ]
 
         Resource = [
@@ -465,6 +550,113 @@ locals {
 
         Resource = [
           "*",
+        ]
+      },
+      {
+        Sid    = "ContactLambdaManagement"
+        Effect = "Allow"
+
+        Action = [
+          "lambda:AddPermission",
+          "lambda:CreateFunction",
+          "lambda:DeleteFunction",
+          "lambda:GetFunction",
+          "lambda:GetFunctionConfiguration",
+          "lambda:GetPolicy",
+          "lambda:ListVersionsByFunction",
+          "lambda:PutFunctionConcurrency",
+          "lambda:RemovePermission",
+          "lambda:TagResource",
+          "lambda:UntagResource",
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration",
+        ]
+
+        Resource = [
+          "arn:aws:lambda:*:${data.aws_caller_identity.current.account_id}:function:${local.role_name_prefix}-contact",
+        ]
+      },
+      {
+        Sid    = "ContactApiGatewayManagement"
+        Effect = "Allow"
+
+        Action = [
+          "apigateway:DELETE",
+          "apigateway:GET",
+          "apigateway:PATCH",
+          "apigateway:POST",
+          "apigateway:PUT",
+        ]
+
+        Resource = [
+          "arn:aws:apigateway:*::/apis",
+          "arn:aws:apigateway:*::/apis/*",
+        ]
+      },
+      {
+        Sid    = "ContactSesManagement"
+        Effect = "Allow"
+
+        Action = [
+          "ses:CreateEmailIdentity",
+          "ses:DeleteEmailIdentity",
+          "ses:GetEmailIdentity",
+          "ses:PutEmailIdentityMailFromAttributes",
+          "ses:TagResource",
+          "ses:UntagResource",
+        ]
+
+        Resource = [
+          "arn:aws:ses:*:${data.aws_caller_identity.current.account_id}:identity/*",
+        ]
+      },
+      {
+        Sid    = "ContactWafManagement"
+        Effect = "Allow"
+
+        Action = [
+          "wafv2:CreateWebACL",
+          "wafv2:DeleteWebACL",
+          "wafv2:GetWebACL",
+          "wafv2:ListTagsForResource",
+          "wafv2:TagResource",
+          "wafv2:UntagResource",
+          "wafv2:UpdateWebACL",
+        ]
+
+        Resource = [
+          "arn:aws:wafv2:*:${data.aws_caller_identity.current.account_id}:global/*",
+        ]
+      },
+      {
+        Sid    = "ContactLogsManagement"
+        Effect = "Allow"
+
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:DeleteLogGroup",
+          "logs:DescribeLogGroups",
+          "logs:ListTagsForResource",
+          "logs:PutRetentionPolicy",
+          "logs:TagResource",
+          "logs:UntagResource",
+        ]
+
+        Resource = [
+          "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.role_name_prefix}-contact*",
+          "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:/aws/apigateway/${local.role_name_prefix}-contact*",
+        ]
+      },
+      {
+        Sid    = "ContactExecRolePassRole"
+        Effect = "Allow"
+
+        Action = [
+          "iam:PassRole",
+        ]
+
+        Resource = [
+          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.role_name_prefix}-contact-exec",
         ]
       },
     ]

@@ -27,3 +27,21 @@ variable "origin_bucket_arn" {
   description = "ARN of the private S3 bucket used as the CloudFront origin."
   type        = string
 }
+
+variable "web_acl_arn" {
+  description = "ARN of the WAFv2 (CLOUDFRONT scope) Web ACL to associate. Empty disables association."
+  type        = string
+  default     = ""
+}
+
+variable "api_origin_domain_name" {
+  description = "Hostname of the contact API (API Gateway) origin. Empty disables the /api/* behavior."
+  type        = string
+  default     = ""
+}
+
+variable "api_path_pattern" {
+  description = "Path pattern routed to the API origin."
+  type        = string
+  default     = "/api/*"
+}
