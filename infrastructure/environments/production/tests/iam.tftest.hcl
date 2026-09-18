@@ -1,4 +1,10 @@
 mock_provider "aws" {
+  mock_data "aws_canonical_user_id" {
+    defaults = {
+      id = "mockcanonicaluserid0000000000000000000000000000000000000000000000"
+    }
+  }
+
   mock_data "aws_caller_identity" {
     defaults = {
       account_id = "216066926519"
@@ -63,6 +69,18 @@ mock_provider "aws" {
   mock_resource "aws_iam_openid_connect_provider" {
     defaults = {
       arn = "arn:aws:iam::216066926519:oidc-provider/token.actions.githubusercontent.com"
+    }
+  }
+
+  mock_resource "aws_wafv2_web_acl" {
+    defaults = {
+      arn = "arn:aws:wafv2:us-east-1:216066926519:global/webacl/frankidugboe-com-waf/mock"
+    }
+  }
+
+  mock_resource "aws_sns_topic" {
+    defaults = {
+      arn = "arn:aws:sns:us-east-1:216066926519:frankidugboe-com-alerts"
     }
   }
 

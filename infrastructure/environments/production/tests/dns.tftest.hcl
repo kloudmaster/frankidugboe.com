@@ -1,4 +1,10 @@
 mock_provider "aws" {
+  mock_data "aws_canonical_user_id" {
+    defaults = {
+      id = "mockcanonicaluserid0000000000000000000000000000000000000000000000"
+    }
+  }
+
   mock_data "aws_caller_identity" {
     defaults = {
       account_id = "216066926519"
@@ -70,6 +76,18 @@ mock_provider "aws" {
       id            = "mockapiid00"
       api_endpoint  = "https://mockapiid00.execute-api.us-east-1.amazonaws.com"
       execution_arn = "arn:aws:execute-api:us-east-1:216066926519:mockapiid00"
+    }
+  }
+
+  mock_resource "aws_wafv2_web_acl" {
+    defaults = {
+      arn = "arn:aws:wafv2:us-east-1:216066926519:global/webacl/frankidugboe-com-waf/mock"
+    }
+  }
+
+  mock_resource "aws_sns_topic" {
+    defaults = {
+      arn = "arn:aws:sns:us-east-1:216066926519:frankidugboe-com-alerts"
     }
   }
 

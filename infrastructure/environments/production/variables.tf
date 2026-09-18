@@ -26,3 +26,15 @@ variable "ses_recipient" {
   description = "Private inbox that receives contact submissions. Supply via TF_VAR_ses_recipient; never commit."
   type        = string
 }
+
+variable "alert_email" {
+  description = "Email for budget/alarm notifications. Defaults to ses_recipient when empty."
+  type        = string
+  default     = ""
+}
+
+variable "monthly_budget_usd" {
+  description = "Monthly AWS cost budget limit in USD."
+  type        = string
+  default     = "10"
+}
