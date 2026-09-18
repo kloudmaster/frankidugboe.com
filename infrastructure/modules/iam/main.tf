@@ -697,6 +697,16 @@ locals {
           "*",
         ]
       },
+    ]
+  })
+
+  # Second deploy inline policy: contact backend, observability and DNSSEC.
+  # Split from the core policy to stay within the 10,240-byte per-inline-policy
+  # limit as the platform grows.
+  github_deploy_permissions_policy_2 = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
       {
         Sid    = "ContactLambdaManagement"
         Effect = "Allow"
@@ -852,6 +862,15 @@ locals {
           "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.role_name_prefix}-contact-exec",
         ]
       },
+    ]
+  })
+
+  # Third deploy inline policy: observability (logging, budget, alarms) and
+  # DNSSEC. Split out to stay within the per-inline-policy size limit.
+  github_deploy_permissions_policy_3 = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
       {
         Sid    = "LogBucketManagement"
         Effect = "Allow"
@@ -1060,4 +1079,16 @@ resource "aws_iam_role_policy" "github_deploy_permissions" {
   name   = "${local.role_name_prefix}-deploy-permissions"
   role   = aws_iam_role.github_deploy.name
   policy = local.github_deploy_permissions_policy
+}
+
+resource "aws_iam_role_policy" "github_deploy_permissions_2" {
+  name   = "${local.role_name_prefix}-deploy-permissions-2"
+  role   = aws_iam_role.github_deploy.name
+  policy = local.github_deploy_permissions_policy_2
+}
+
+resource "aws_iam_role_policy" "github_deploy_permissions_3" {
+  name   = "${local.role_name_prefix}-deploy-permissions-3"
+  role   = aws_iam_role.github_deploy.name
+  policy = local.github_deploy_permissions_policy_3
 }

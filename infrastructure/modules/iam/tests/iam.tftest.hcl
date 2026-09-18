@@ -398,6 +398,42 @@ run "supports_non_iam_terraform_apply" {
 
     error_message = "Full Terraform deployment permissions must not introduce IAM self-modification."
   }
+
+  assert {
+    condition = alltrue([
+      for action in flatten([
+        for statement in jsondecode(
+          aws_iam_role_policy.github_deploy_permissions_2.policy
+        ).Statement : statement.Action
+      ]) :
+      !startswith(action, "iam:Create") &&
+      !startswith(action, "iam:Put") &&
+      !startswith(action, "iam:Attach") &&
+      !startswith(action, "iam:Update") &&
+      !startswith(action, "iam:Delete") &&
+      !startswith(action, "iam:Set")
+    ])
+
+    error_message = "The second deploy policy must not introduce IAM self-modification either."
+  }
+
+  assert {
+    condition = alltrue([
+      for action in flatten([
+        for statement in jsondecode(
+          aws_iam_role_policy.github_deploy_permissions_3.policy
+        ).Statement : statement.Action
+      ]) :
+      !startswith(action, "iam:Create") &&
+      !startswith(action, "iam:Put") &&
+      !startswith(action, "iam:Attach") &&
+      !startswith(action, "iam:Update") &&
+      !startswith(action, "iam:Delete") &&
+      !startswith(action, "iam:Set")
+    ])
+
+    error_message = "The third deploy policy must not introduce IAM self-modification either."
+  }
 }
 
 run "supports_s3_native_state_locking" {
