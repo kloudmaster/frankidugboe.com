@@ -379,6 +379,15 @@ locals {
           "s3:DeleteBucketPolicy",
           "s3:DeleteBucketPublicAccessBlock",
           "s3:DeleteBucketTagging",
+          "s3:GetAccelerateConfiguration",
+          "s3:GetBucketAcl",
+          "s3:GetBucketCORS",
+          "s3:GetBucketLogging",
+          "s3:GetBucketObjectLockConfiguration",
+          "s3:GetBucketRequestPayment",
+          "s3:GetBucketWebsite",
+          "s3:GetLifecycleConfiguration",
+          "s3:GetReplicationConfiguration",
           "s3:GetBucketLocation",
           "s3:GetBucketOwnershipControls",
           "s3:GetBucketPolicy",
@@ -393,6 +402,7 @@ locals {
           "s3:PutBucketTagging",
           "s3:PutBucketVersioning",
           "s3:PutEncryptionConfiguration",
+          "s3:PutLifecycleConfiguration",
         ]
 
         Resource = [
@@ -457,6 +467,7 @@ locals {
           "cloudfront:DescribeFunction",
           "cloudfront:GetFunction",
           "cloudfront:GetOriginAccessControl",
+          "cloudfront:ListTagsForResource",
           "cloudfront:PublishFunction",
           "cloudfront:UpdateFunction",
           "cloudfront:UpdateOriginAccessControl",
