@@ -7,6 +7,11 @@ const homepage = readFileSync(
   'utf8',
 );
 
+const navigation = readFileSync(
+  resolve(process.cwd(), 'src/data/navigation.ts'),
+  'utf8',
+);
+
 describe('portfolio navigation', () => {
   test('exposes the primary portfolio sections', () => {
     const sections = [
@@ -21,7 +26,7 @@ describe('portfolio navigation', () => {
     ];
 
     for (const section of sections) {
-      expect(homepage).toContain(section);
+      expect(navigation).toContain(section);
     }
   });
 });

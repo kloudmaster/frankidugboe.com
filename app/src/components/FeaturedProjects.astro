@@ -34,7 +34,7 @@ const { projects } = Astro.props;
     <div class="mt-12 grid gap-6 lg:grid-cols-3">
       {
         projects.map((project) => (
-          <article class="flex flex-col rounded-2xl border border-slate-800 bg-slate-900/70 p-7">
+          <article class="reveal card-lift flex flex-col rounded-2xl border border-slate-800 bg-slate-900/70 p-7 hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/5">
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-400">
               {project.category}
             </p>
