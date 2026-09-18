@@ -29,6 +29,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
+      - name: Detect infrastructure changes
+        uses: dorny/paths-filter@v3.0.2
+        id: changes
+        with:
+          filters: |
+            infra:
+              - "infrastructure/**"
+              - "functions/**"
+              - ".terraform-version"
+              - ".github/workflows/deploy.yml"
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v4.0.1
         with:
@@ -52,12 +63,20 @@ jobs:
       - name: Initialize production backend
         run: terraform -chdir="$TF_WORKDIR" init -input=false
 
+      # Only apply infrastructure when infra/functions actually changed.
+      # UI-only deploys skip the apply and just read existing outputs, then
+      # rebuild and publish the site — no unnecessary control-plane activity.
       - name: Terraform apply
+        if: steps.changes.outputs.infra == 'true'
         env:
           TF_VAR_ses_recipient: ${{ secrets.SES_RECIPIENT }}
         run: |
           terraform -chdir="$TF_WORKDIR" apply \
             -input=false -no-color -auto-approve -lock-timeout=5m
+
+      - name: Skip Terraform apply (no infrastructure changes)
+        if: steps.changes.outputs.infra != 'true'
+        run: echo "No infrastructure or function changes; skipping Terraform apply."
 
       - name: Export infrastructure outputs
         id: tf
@@ -118,20 +137,44 @@ jobs:
         run: |
           set -euo pipefail
           url="https://frankidugboe.com/"
+
           echo "Waiting for CloudFront to serve the updated site..."
+          ok=""
           for attempt in $(seq 1 10); do
             status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "$url" || echo "000")"
             echo "Attempt ${attempt}: HTTP ${status}"
             if [ "$status" = "200" ]; then
-              echo "Verifying security headers and TLS..."
-              headers="$(curl -sSI --max-time 15 "$url")"
-              echo "$headers"
-              echo "$headers" | grep -iq '^strict-transport-security:' \
-                || { echo "Missing HSTS header"; exit 1; }
-              echo "Smoke test passed."
-              exit 0
+              ok="yes"
+              break
             fi
             sleep 15
           done
-          echo "Smoke test failed: site did not return HTTP 200 in time."
-          exit 1
+
+          if [ -z "$ok" ]; then
+            echo "Smoke test failed: site did not return HTTP 200 in time."
+            exit 1
+          fi
+
+          echo "Verifying security headers and TLS..."
+          headers="$(curl -sSI --max-time 15 "$url")"
+          echo "$headers"
+          echo "$headers" | grep -iq '^strict-transport-security:' \
+            || { echo "Missing HSTS header"; exit 1; }
+
+          # Contact API check. Send a deliberately invalid payload so the
+          # Lambda validates and returns HTTP 422 WITHOUT sending an email.
+          # This proves CloudFront -> API Gateway -> Lambda works end to end
+          # on every deploy without spamming the inbox.
+          echo "Verifying the contact API rejects invalid input (no email sent)..."
+          api_status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 \
+            -X POST "https://frankidugboe.com/api/contact" \
+            -H 'content-type: application/json' \
+            -d '{"name":"x","email":"invalid","subject":"x","message":"x","company_website":""}' \
+            || echo "000")"
+          echo "Contact API returned HTTP ${api_status}"
+          if [ "$api_status" != "422" ]; then
+            echo "Contact API smoke test failed: expected 422 for invalid input, got ${api_status}."
+            exit 1
+          fi
+
+          echo "Smoke test passed."

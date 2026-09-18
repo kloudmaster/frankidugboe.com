@@ -38,8 +38,8 @@ describe('GitHub section', () => {
     expect(githubSection).toContain('https://github.com/kloudmaster');
   });
 
-  test('embeds the live contribution graph with a fallback', () => {
-    expect(githubSection).toContain('ghchart.rshah.org');
+  test('embeds the self-hosted contribution graph with a fallback', () => {
+    expect(githubSection).toContain('/images/github-contributions.svg');
     expect(githubSection).toContain('gh-fallback');
   });
 });
