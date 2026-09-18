@@ -165,8 +165,8 @@ const title = 'Contact | Frank Osasere Idugboe';
                   role="status"
                   aria-live="polite"
                 >
-                  The form interface is ready. Secure message delivery will be
-                  enabled when the AWS backend is deployed.
+                  The form interface is ready. Messages are delivered securely
+                  through the AWS backend.
                 </p>
               </div>
             </div>
@@ -179,17 +179,59 @@ const title = 'Contact | Frank Osasere Idugboe';
   <script>
     const form = document.querySelector<HTMLFormElement>('#contact-form');
     const status = document.querySelector<HTMLElement>('#contact-status');
+    const submitButton = form?.querySelector<HTMLButtonElement>(
+      'button[type="submit"]',
+    );
 
-    form?.addEventListener('submit', (event) => {
+    const ENDPOINT = '/api/contact';
+
+    function setStatus(message: string) {
+      if (status) {
+        status.textContent = message;
+      }
+    }
+
+    form?.addEventListener('submit', async (event) => {
       event.preventDefault();
 
       if (!form.reportValidity()) {
         return;
       }
 
-      if (status) {
-        status.textContent =
-          'Message delivery is not enabled yet. The secure AWS contact backend will be connected before production launch.';
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      submitButton?.setAttribute('disabled', 'true');
+      setStatus('Sending your message…');
+
+      try {
+        const response = await fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          form.reset();
+          setStatus('Thank you — your message has been sent successfully.');
+        } else if (response.status === 422) {
+          setStatus(
+            'Some fields need attention. Please review your entries and try again.',
+          );
+        } else if (response.status === 429) {
+          setStatus(
+            'Too many attempts. Please wait a moment before trying again.',
+          );
+        } else {
+          setStatus(
+            'Something went wrong while sending your message. Please try again later.',
+          );
+        }
+      } catch {
+        setStatus(
+          'Network error. Please check your connection and try again.',
+        );
+      } finally {
+        submitButton?.removeAttribute('disabled');
       }
     });
   </script>
