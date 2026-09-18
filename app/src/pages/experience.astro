@@ -90,20 +90,20 @@ const roles = [
       <div class="mx-auto max-w-5xl px-6 lg:px-8">
         <div class="relative">
           <div
-            class="absolute bottom-0 left-[7px] top-2 hidden w-px bg-slate-300 sm:block"
+            class="absolute bottom-0 left-[7px] top-2 hidden w-px bg-gradient-to-b from-sky-400 via-slate-300 to-transparent sm:block"
             aria-hidden="true"
           ></div>
 
-          <div class="space-y-10">
+          <div class="space-y-8">
             {
-              roles.map((role) => (
-                <article class="relative sm:pl-12">
+              roles.map((role, index) => (
+                <article class={`reveal relative sm:pl-12 ${index % 3 === 1 ? 'reveal-delay-1' : index % 3 === 2 ? 'reveal-delay-2' : ''}`}>
                   <div
-                    class="absolute left-0 top-2 hidden h-[15px] w-[15px] rounded-full border-4 border-slate-50 bg-sky-600 sm:block"
+                    class="absolute left-0 top-6 hidden h-[15px] w-[15px] rounded-full border-4 border-slate-50 bg-sky-600 ring-2 ring-sky-200 sm:block"
                     aria-hidden="true"
-                  ></div>
+                  />
 
-                  <div class="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+                  <div class="card-lift rounded-2xl border border-slate-200 bg-white p-7 shadow-sm hover:border-sky-200 hover:shadow-md">
                     <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div>
                         <p class="text-sm font-semibold text-sky-700">
@@ -123,7 +123,7 @@ const roles = [
                         }
                       </div>
 
-                      <p class="shrink-0 text-sm font-semibold text-slate-500">
+                      <p class="inline-flex shrink-0 items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                         {role.period}
                       </p>
                     </div>
@@ -152,8 +152,9 @@ const roles = [
 
     <section class="bg-slate-950 py-20 text-white">
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="max-w-3xl">
-          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-sky-400">
+        <div class="reveal max-w-3xl">
+          <p class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-sky-400">
+            <span class="h-px w-8 bg-sky-500" aria-hidden="true"></span>
             Engineering scope
           </p>
 

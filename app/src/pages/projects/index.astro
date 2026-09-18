@@ -6,6 +6,33 @@ import PageHero from '../../components/PageHero.astro';
 import { navItems } from '../../data/navigation';
 
 const title = 'Projects | Frank Osasere Idugboe';
+
+const projects = [
+  {
+    category: 'Kubernetes',
+    title: 'Kubernetes / Karpenter Incident Debugging',
+    description:
+      'Resource requests, AWS IAM trust, Karpenter, and EBS Availability Zone affinity investigated as one production scheduling chain.',
+    href: '/projects/karpenter-incident-debugging',
+    tags: ['Kubernetes', 'Karpenter', 'AWS IAM', 'EBS'],
+  },
+  {
+    category: 'Cloud Security',
+    title: 'EBS Encryption Automation',
+    description:
+      'AWS Config, Systems Manager, and Infrastructure as Code for automated storage-security compliance.',
+    href: '/projects/ebs-encryption-automation',
+    tags: ['AWS Config', 'SSM', 'EBS', 'IaC'],
+  },
+  {
+    category: 'Autoscaling',
+    title: 'KEDA Event-Driven Autoscaling',
+    description:
+      'Event-driven Kubernetes workload scaling with operational validation and observability.',
+    href: '/projects/keda-autoscaling',
+    tags: ['KEDA', 'Kubernetes', 'Autoscaling', 'Observability'],
+  },
+];
 ---
 
 <BaseLayout
@@ -21,39 +48,44 @@ const title = 'Projects | Frank Osasere Idugboe';
       description="Deep dives into cloud architecture, Kubernetes troubleshooting, security automation, autoscaling, CI/CD, observability, and infrastructure design."
     />
 
-    <section class="bg-slate-950 py-16 text-white">
+    <section class="bg-slate-950 py-16 text-white lg:py-20">
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <div class="grid gap-6 lg:grid-cols-3">
-          <article class="rounded-2xl border border-slate-800 p-7">
-            <p class="text-sm font-semibold text-sky-400">Kubernetes</p>
-            <h2 class="mt-3 text-xl font-bold">
-              Kubernetes / Karpenter Incident Debugging
-            </h2>
-            <p class="mt-4 leading-7 text-slate-400">
-              Resource requests, AWS IAM trust, Karpenter, and EBS Availability
-              Zone affinity investigated as one production scheduling chain.
-            </p>
-          </article>
+          {
+            projects.map((project, index) => (
+              <a
+                href={project.href}
+                class={`reveal card-lift group flex flex-col rounded-2xl border border-slate-800 bg-slate-900/60 p-7 hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/5 ${index === 1 ? 'reveal-delay-1' : index === 2 ? 'reveal-delay-2' : ''}`}
+              >
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-400">
+                  {project.category}
+                </p>
 
-          <article class="rounded-2xl border border-slate-800 p-7">
-            <p class="text-sm font-semibold text-sky-400">Cloud Security</p>
-            <h2 class="mt-3 text-xl font-bold">EBS Encryption Automation</h2>
-            <p class="mt-4 leading-7 text-slate-400">
-              AWS Config, Systems Manager, and Infrastructure as Code for
-              automated storage-security compliance.
-            </p>
-          </article>
+                <h2 class="mt-4 text-xl font-bold leading-7">
+                  {project.title}
+                </h2>
 
-          <article class="rounded-2xl border border-slate-800 p-7">
-            <p class="text-sm font-semibold text-sky-400">Autoscaling</p>
-            <h2 class="mt-3 text-xl font-bold">
-              KEDA Event-Driven Autoscaling
-            </h2>
-            <p class="mt-4 leading-7 text-slate-400">
-              Event-driven Kubernetes workload scaling with operational
-              validation and observability.
-            </p>
-          </article>
+                <p class="mt-4 flex-1 leading-7 text-slate-400">
+                  {project.description}
+                </p>
+
+                <div class="mt-6 flex flex-wrap gap-2">
+                  {project.tags.map((tag) => (
+                    <span class="rounded-full border border-slate-700 px-3 py-1 text-xs font-medium text-slate-300">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <span class="mt-7 inline-flex items-center font-semibold text-sky-400 transition group-hover:text-sky-300">
+                  Read case study
+                  <span aria-hidden="true" class="ml-2 transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
+                </span>
+              </a>
+            ))
+          }
         </div>
       </div>
     </section>

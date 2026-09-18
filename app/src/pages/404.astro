@@ -13,9 +13,10 @@ const title = 'Page not found | Frank Osasere Idugboe';
 >
   <SiteHeader navItems={navItems} />
 
-  <main class="bg-white">
-    <section class="mx-auto flex min-h-[70vh] max-w-7xl items-center px-6 py-24 lg:px-8">
-      <div class="max-w-2xl">
+  <main class="relative overflow-hidden bg-white">
+    <div class="hero-aurora pointer-events-none absolute inset-0" aria-hidden="true"></div>
+    <section class="relative mx-auto flex min-h-[70vh] max-w-7xl items-center px-6 py-24 lg:px-8">
+      <div class="reveal max-w-2xl">
         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
           404
         </p>
@@ -30,7 +31,7 @@ const title = 'Page not found | Frank Osasere Idugboe';
 
         <a
           href="/"
-          class="mt-8 inline-flex rounded-lg bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+          class="mt-8 inline-flex rounded-lg bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
         >
           Return to homepage
         </a>
