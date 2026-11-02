@@ -51,8 +51,8 @@ describe('Experience page professional history', () => {
 
   test('includes Intersource Global experience', () => {
     expect(experience).toContain('Intersource Global Inc.');
-    expect(experience).toContain('DevSecOps Engineer');
-    expect(experience).toContain('Feb 2021');
+    expect(experience).toContain('Cyber Security Analyst');
+    expect(experience).toContain('Oct 2022');
   });
 
   test('shows production engineering capabilities', () => {
