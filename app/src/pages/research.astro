@@ -8,25 +8,28 @@ import { navItems } from '../data/navigation';
 const title = 'Research | Frank Osasere Idugboe';
 
 const researchAreas = [
-  'cloud forensics',
+  'digital chain of custody',
+  'data provenance',
   'IoT forensics',
-  'digital evidence',
   'forensic readiness',
-  'chain of custody',
+  'edge computing',
   'livestock traceability',
-  'intrusion detection',
-  'machine learning security',
+  'digital evidence',
+  'cloud forensics',
 ];
 
 const researchStack = [
   'ESP32',
-  'RFID',
-  'LoRa',
+  'MicroPython',
+  'USB/UART',
   'Raspberry Pi',
-  'MQTT',
-  'Local Database',
-  'AWS IoT Core',
-  'ThingsBoard',
+  'Python / PySerial',
+  'SQLite',
+  'REST / HTTPS',
+  'FastAPI',
+  'PostgreSQL',
+  'HMAC-SHA-256',
+  'Design Science Research',
 ];
 
 const publications = [
@@ -51,15 +54,15 @@ const publications = [
 
 <BaseLayout
   title={title}
-  description="Forensic Science research at UNIFESSPA focused on cloud forensics, IoT forensics, forensic-ready logging, digital evidence, and connected systems."
+  description="Forensic Sciences research at UNIFESSPA: IoT prototype for livestock traceability, digital chain-of-custody documentation, data provenance, and HMAC-based record integrity."
 >
   <SiteHeader navItems={navItems} />
 
   <main>
     <PageHero
       eyebrow="Research"
-      title="Digital evidence at the intersection of cloud and connected systems."
-      description="Graduate research in Forensic Science at UNIFESSPA focused on forensic-ready systems, cloud-connected IoT, trustworthy logging, and evidence preservation."
+      title="Documenting the digital path of records in IoT systems."
+      description="Master's research in Forensic Sciences at UNIFESSPA focused on building an IoT prototype that records livestock traceability events and supports digital chain-of-custody documentation across edge, gateway, and server."
     />
 
     <section class="bg-white py-20">
@@ -71,24 +74,19 @@ const publications = [
             </p>
 
             <h2 class="mt-3 text-3xl font-bold tracking-tight text-slate-950">
-              Forensic-ready IoT logging for livestock traceability
+              IoT prototype for livestock traceability and digital chain-of-custody documentation
             </h2>
 
             <p class="mt-6 leading-8 text-slate-600">
-              My current research explores a forensic-ready IoT architecture for livestock traceability, with emphasis on preserving reliable event logs that can support later digital investigation.
+              My dissertation develops a functional IoT prototype that records simulated livestock identification and movement events, preserving and correlating their representations across an edge device, gateway, and server under controlled conditions.
             </p>
 
             <p class="mt-5 leading-8 text-slate-600">
-              The research connects edge devices, identification technologies,
-              long-range communication, gateway infrastructure, local data
-              storage, cloud services, and forensic evidence requirements.
+              The core research question is: how can an IoT system record livestock traceability events and support documentation of the digital path of the records? The work distinguishes the logical event, its concrete representations, and the operations performed on them — tracking what the system actually received and processed without attributing evidentiary force the architecture cannot support.
             </p>
 
             <p class="mt-5 leading-8 text-slate-600">
-              The central forensic concern is not simply collecting operational
-              data. The system should produce logs that are useful for
-              reconstruction, integrity checking, attribution, digital evidence
-              handling, and chain of custody.
+              At the gateway, received bytes are preserved before any transformation, local persistence is maintained with a durable outbox, and HMAC-SHA-256 is applied in two independent domains — one protecting the edge message, another protecting the gateway synchronisation envelope. The server provides idempotent reception, confirmation after persistence, and query/export functions. I adopt Design Science Research as the methodological orientation and treat the prototype as an instantiation.
             </p>
           </div>
 
@@ -115,25 +113,24 @@ const publications = [
       <div class="mx-auto max-w-5xl px-6 lg:px-8">
         <div class="reveal">
           <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
-            Proposed technology path
+            System architecture
           </p>
 
           <h2 class="mt-3 text-3xl font-bold tracking-tight text-slate-950">
-            From edge identification to cloud evidence workflows
+            From edge event to server-side digital path documentation
           </h2>
 
           <div class="mt-8 rounded-2xl bg-slate-950 p-7 font-mono text-sm leading-8 text-slate-300">
-            <p>ESP32 + RFID / Sensors</p>
+            <p>ESP32 (MicroPython)</p>
+            <p class="pl-2 text-slate-500 text-xs">Generate event, deterministic JSON, HMAC-D</p>
+            <p class="pl-4">↓ USB / UART</p>
+            <p>Raspberry Pi Gateway (Python / PySerial)</p>
+            <p class="pl-2 text-slate-500 text-xs">Preserve received bytes, SQLite local persistence, durable outbox, HMAC-G</p>
+            <p class="pl-4">↓ REST / HTTPS</p>
+            <p>Project-controlled Server (FastAPI)</p>
+            <p class="pl-2 text-slate-500 text-xs">Contract validation, HMAC verification, idempotent reception, PostgreSQL persistence</p>
             <p class="pl-4">↓</p>
-            <p>LoRa</p>
-            <p class="pl-4">↓</p>
-            <p>Raspberry Pi Gateway</p>
-            <p class="pl-4">↓</p>
-            <p>MQTT + Local Database</p>
-            <p class="pl-4">↓</p>
-            <p>AWS IoT Core / ThingsBoard</p>
-            <p class="pl-4">↓</p>
-            <p>Forensic-ready logging and evidence analysis</p>
+            <p>Digital path documentation and query/export</p>
           </div>
 
           <div class="mt-8 flex flex-wrap gap-2">
@@ -201,10 +198,7 @@ const publications = [
           </h2>
 
           <p class="mt-6 max-w-4xl leading-8 text-slate-600">
-            My broader interests include cloud forensics, IoT forensics,
-            forensic-ready infrastructure, digital evidence workflows,
-            trustworthy logging, and the relationship between operational
-            observability and forensic investigation.
+            My broader interests include digital forensics, forensic-ready IoT systems, data provenance, cloud forensics, trustworthy logging, and the relationship between operational observability and the documentation of digital evidence. This work is situated at UNIFESSPA in Marabá, Pará, Brazil, with defence scheduled for February 2027.
           </p>
         </div>
       </div>

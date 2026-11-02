@@ -38,9 +38,9 @@ describe('Research page', () => {
 
   test('shows the research technology path', () => {
     expect(research).toContain('ESP32');
-    expect(research).toContain('LoRa');
+    expect(research).toContain('USB/UART');
     expect(research).toContain('Raspberry Pi');
-    expect(research).toContain('MQTT');
+    expect(research).toContain('FastAPI');
   });
 });
 
