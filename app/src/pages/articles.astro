@@ -15,6 +15,32 @@ const articles = [
     description:
       'A practical incident walkthrough tracing pending Kubernetes workloads through resource requests, Karpenter, AWS IAM trust, and EBS Availability Zone affinity.',
     url: 'https://dev.to/aws-builders/kubernetes-at-3-cpu-but-pods-still-pending-debugging-requests-karpenter-and-ebs-az-affinity-17jh',
+    portfolioLink: '/projects/karpenter-incident-debugging',
+    portfolioLabel: 'View portfolio case study →',
+    externalLabel: 'Read on DEV Community →',
+  },
+];
+
+const papers = [
+  {
+    title: 'Machine Learning-Driven Intrusion Detection with Forensic Readiness in Cloud-Native IoT Environments',
+    subtitle: 'American Journal of Electrical and Computer Engineering, Vol. 10, pp. 1–18, 2026',
+    category: 'IoT Security · Forensic Readiness · Machine Learning',
+    description:
+      'Peer-reviewed journal article examining machine learning approaches to intrusion detection in cloud-native IoT environments, with a focus on integrating forensic readiness to support digital evidence workflows.',
+    doi: 'https://doi.org/10.11648/j.ajece.20261001.11',
+    authors: 'Idugboe, F.; Okonkwo, H.; Ejiyere, B.; Ugo, E.',
+    published: 'Jun 2026',
+  },
+  {
+    title: 'Cloud Forensic Tools and Storage: A Systematic Mapping Study',
+    subtitle: 'GAS Journal of Engineering and Technology, Vol. 3, pp. 54–64, 2026',
+    category: 'Cloud Forensics · Digital Forensics · Systematic Review',
+    description:
+      'A systematic mapping study surveying and categorising cloud forensic tools and storage mechanisms, providing a structured overview of the state of the field to support further research and practitioner decisions.',
+    doi: 'https://doi.org/10.5281/ZENODO.19313810',
+    authors: 'Idugboe, F. O.; Junior, W.; Castro, V.',
+    published: 'Mar 2026',
   },
 ];
 
@@ -26,6 +52,9 @@ const topics = [
   'Infrastructure as Code',
   'Observability',
   'Incident Engineering',
+  'Cloud Forensics',
+  'IoT Security',
+  'Forensic Readiness',
 ];
 ---
 
@@ -66,10 +95,10 @@ const topics = [
 
                 <div class="mt-7 flex flex-wrap gap-4">
                   <a
-                    href="/projects/karpenter-incident-debugging"
+                    href={article.portfolioLink}
                     class="font-semibold text-slate-950 hover:text-sky-700"
                   >
-                    View portfolio case study →
+                    {article.portfolioLabel}
                   </a>
 
                   <a
@@ -78,12 +107,70 @@ const topics = [
                     rel="noopener noreferrer"
                     class="font-semibold text-sky-700 hover:text-sky-600"
                   >
-                    Read on DEV Community →
+                    {article.externalLabel}
                   </a>
                 </div>
               </article>
             ))
           }
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white py-20">
+      <div class="mx-auto max-w-6xl px-6 lg:px-8">
+        <div class="reveal">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+            Research publications
+          </p>
+
+          <h2 class="mt-3 text-2xl font-bold text-slate-950">
+            Peer-reviewed journal articles
+          </h2>
+
+          <div class="mt-8 grid gap-8">
+            {
+              papers.map((paper) => (
+                <article class="reveal card-lift rounded-2xl border border-slate-200 bg-white p-8 shadow-sm hover:border-sky-200 hover:shadow-md">
+                  <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                    <p class="text-sm font-semibold uppercase tracking-[0.16em] text-sky-700">
+                      {paper.category}
+                    </p>
+                    <p class="inline-flex shrink-0 items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                      {paper.published}
+                    </p>
+                  </div>
+
+                  <h2 class="mt-4 text-2xl font-bold tracking-tight text-slate-950">
+                    {paper.title}
+                  </h2>
+
+                  <p class="mt-2 text-sm font-medium text-slate-500">
+                    {paper.subtitle}
+                  </p>
+
+                  <p class="mt-1 text-sm text-slate-500">
+                    {paper.authors}
+                  </p>
+
+                  <p class="mt-5 max-w-4xl leading-8 text-slate-600">
+                    {paper.description}
+                  </p>
+
+                  <div class="mt-7">
+                    <a
+                      href={paper.doi}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="font-semibold text-sky-700 hover:text-sky-600"
+                    >
+                      View publication →
+                    </a>
+                  </div>
+                </article>
+              ))
+            }
+          </div>
         </div>
       </div>
     </section>
